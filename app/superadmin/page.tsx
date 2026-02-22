@@ -82,7 +82,12 @@ export default async function SuperadminPage() {
               {organizations.map((org) => (
                 <tr key={org.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
-                    <p className="text-sm font-medium text-gray-900">{org.name}</p>
+                    <Link
+                      href={`/superadmin/organizations/${org.id}`}
+                      className="text-sm font-medium text-gray-900 hover:text-indigo-600 transition-colors"
+                    >
+                      {org.name}
+                    </Link>
                   </td>
                   <td className="px-6 py-4">
                     <code className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
