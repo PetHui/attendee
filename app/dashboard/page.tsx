@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatShortDate, EVENT_STATUS_LABELS, EVENT_STATUS_COLORS } from '@/lib/utils'
+import EventStatusButton from '@/components/dashboard/event-status-button'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -115,6 +116,7 @@ export default async function DashboardPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1 justify-end flex-wrap">
+                        <EventStatusButton eventId={event.id} status={event.status} />
                         <Link
                           href={`/dashboard/events/${event.id}`}
                           className="text-xs text-gray-600 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition-colors"
