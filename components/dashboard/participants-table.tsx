@@ -33,6 +33,21 @@ export default function ParticipantsTable({
     setCheckingIn(null)
   }
 
+  async function handleUndoCheckin(participantId: string) {
+    setCheckingIn(participantId)
+    const res = await fetch('/api/checkin/undo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participantId }),
+    })
+    if (res.ok) {
+      setLocalParticipants((prev) =>
+        prev.map((p) => (p.id === participantId ? { ...p, checked_in_at: null } : p))
+      )
+    }
+    setCheckingIn(null)
+  }
+
   const filtered = localParticipants.filter((p) => {
     if (!search) return true
     const allValues = p.field_values
@@ -157,7 +172,15 @@ export default function ParticipantsTable({
                       : '–'}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    {!p.checked_in_at && (
+                    {p.checked_in_at ? (
+                      <button
+                        onClick={() => handleUndoCheckin(p.id)}
+                        disabled={checkingIn === p.id}
+                        className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {checkingIn === p.id ? '...' : 'Ångra'}
+                      </button>
+                    ) : (
                       <button
                         onClick={() => handleCheckin(p.id, p.qr_code)}
                         disabled={checkingIn === p.id}
