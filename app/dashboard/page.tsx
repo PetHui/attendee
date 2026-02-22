@@ -35,7 +35,10 @@ export default async function DashboardPage() {
     orgSlug = impOrg?.slug ?? ''
   }
 
-  const { data: events } = await supabase
+  // Använd service-klient vid impersonering för att kringgå RLS
+  const dataClient = impersonatedOrgId ? createServiceClient() : supabase
+
+  const { data: events } = await dataClient
     .from('events')
     .select('*')
     .eq('organization_id', effectiveOrgId)
@@ -44,7 +47,7 @@ export default async function DashboardPage() {
   // Participant counts per event
   const counts: Record<string, { total: number; checkedIn: number }> = {}
   if (events?.length) {
-    const { data: rows } = await supabase
+    const { data: rows } = await dataClient
       .from('participants')
       .select('event_id, checked_in_at')
       .in('event_id', events.map((e) => e.id))
