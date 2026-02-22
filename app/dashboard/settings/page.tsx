@@ -86,10 +86,12 @@ export default function SettingsPage() {
         return
       }
       setSaved(true)
-      // Apply the new color immediately in the current tab
-      document.documentElement.style.setProperty('--brand', color)
-      const wrapper = document.querySelector('[style*="--brand"]') as HTMLElement | null
-      if (wrapper) wrapper.style.setProperty('--brand', color)
+      // Uppdatera --brand direkt i alla element som har den definierad
+      document.querySelectorAll<HTMLElement>('[style]').forEach((el) => {
+        if (el.style.getPropertyValue('--brand')) {
+          el.style.setProperty('--brand', color)
+        }
+      })
     } finally {
       setSaving(false)
     }
