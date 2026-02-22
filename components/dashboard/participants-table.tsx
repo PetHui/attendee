@@ -14,8 +14,26 @@ export default function ParticipantsTable({
   participants: ParticipantWithValues[]
 }) {
   const [search, setSearch] = useState('')
+  const [checkingIn, setCheckingIn] = useState<string | null>(null)
+  const [localParticipants, setLocalParticipants] = useState(participants)
 
-  const filtered = participants.filter((p) => {
+  async function handleCheckin(participantId: string, qrCode: string) {
+    setCheckingIn(participantId)
+    const res = await fetch('/api/checkin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ qrCode }),
+    })
+    if (res.ok) {
+      const now = new Date().toISOString()
+      setLocalParticipants((prev) =>
+        prev.map((p) => (p.id === participantId ? { ...p, checked_in_at: now } : p))
+      )
+    }
+    setCheckingIn(null)
+  }
+
+  const filtered = localParticipants.filter((p) => {
     if (!search) return true
     const allValues = p.field_values
       .map((fv) => fv.value?.toLowerCase() ?? '')
@@ -47,7 +65,7 @@ export default function ParticipantsTable({
     URL.revokeObjectURL(url)
   }
 
-  const checkedInCount = participants.filter((p) => p.checked_in_at).length
+  const checkedInCount = localParticipants.filter((p) => p.checked_in_at).length
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -88,6 +106,7 @@ export default function ParticipantsTable({
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
                 Incheckad
               </th>
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -136,6 +155,17 @@ export default function ParticipantsTable({
                           minute: '2-digit',
                         })
                       : '–'}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    {!p.checked_in_at && (
+                      <button
+                        onClick={() => handleCheckin(p.id, p.qr_code)}
+                        disabled={checkingIn === p.id}
+                        className="px-3 py-1 text-xs font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {checkingIn === p.id ? 'Checkar in...' : 'Checka in'}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))
