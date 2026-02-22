@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServiceClient } from '@/lib/supabase/server'
+import DeleteUserButton from './delete-user-button'
 
 const ROLE_LABELS: Record<string, string> = {
   superadmin: 'Superadmin',
@@ -81,6 +82,7 @@ export default async function OrganizationDetailPage({
                 <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Tillagd
                 </th>
+                <th className="px-6 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -101,6 +103,9 @@ export default async function OrganizationDetailPage({
                     <span className="text-sm text-gray-500">
                       {new Date(user.created_at).toLocaleDateString('sv-SE')}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <DeleteUserButton orgId={org.id} userId={user.id} userName={user.name} />
                   </td>
                 </tr>
               ))}
