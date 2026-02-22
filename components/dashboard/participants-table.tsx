@@ -14,6 +14,7 @@ export default function ParticipantsTable({
   participants: ParticipantWithValues[]
 }) {
   const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState<'all' | 'checked_in' | 'not_checked_in'>('all')
   const [checkingIn, setCheckingIn] = useState<string | null>(null)
   const [localParticipants, setLocalParticipants] = useState(participants)
 
@@ -49,6 +50,8 @@ export default function ParticipantsTable({
   }
 
   const filtered = localParticipants.filter((p) => {
+    if (filter === 'checked_in' && !p.checked_in_at) return false
+    if (filter === 'not_checked_in' && p.checked_in_at) return false
     if (!search) return true
     const allValues = p.field_values
       .map((fv) => fv.value?.toLowerCase() ?? '')
@@ -84,20 +87,41 @@ export default function ParticipantsTable({
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="p-4 border-b border-gray-200 flex items-center gap-3">
-        <input
-          type="search"
-          placeholder="Sök deltagare..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        />
-        <button
-          onClick={downloadCSV}
-          className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
-        >
-          Exportera CSV
-        </button>
+      <div className="p-4 border-b border-gray-200 flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <input
+            type="search"
+            placeholder="Sök deltagare..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <button
+            onClick={downloadCSV}
+            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap"
+          >
+            Exportera CSV
+          </button>
+        </div>
+        <div className="flex gap-2">
+          {([
+            { value: 'all', label: 'Alla' },
+            { value: 'checked_in', label: 'Incheckade' },
+            { value: 'not_checked_in', label: 'Ej incheckade' },
+          ] as const).map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setFilter(opt.value)}
+              className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
+                filter === opt.value
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="overflow-x-auto">
