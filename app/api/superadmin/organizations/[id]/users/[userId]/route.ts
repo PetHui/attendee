@@ -41,6 +41,10 @@ export async function DELETE(
     return NextResponse.json({ error: 'Användaren hittades inte.' }, { status: 404 })
   }
 
+  if (targetUser.role === 'superadmin') {
+    return NextResponse.json({ error: 'Superadmin-konton kan inte tas bort.' }, { status: 403 })
+  }
+
   // Delete the users row first (FK constraint), then the auth user
   const { error: rowError } = await supabase.from('users').delete().eq('id', userId)
   if (rowError) {
