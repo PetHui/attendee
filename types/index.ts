@@ -29,6 +29,7 @@ export interface Event {
   starts_at: string | null
   ends_at: string | null
   max_participants: number | null
+  registration_deadline: string | null
   status: EventStatus
   created_at: string
 }

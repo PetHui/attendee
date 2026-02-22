@@ -47,6 +47,10 @@ export default async function RegistrationPage({
   const isFull =
     event.max_participants != null && (count ?? 0) >= event.max_participants
 
+  const isPastDeadline =
+    event.registration_deadline != null &&
+    new Date(event.registration_deadline) < new Date()
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white py-12 px-4">
       <div className="max-w-lg mx-auto">
@@ -81,12 +85,31 @@ export default async function RegistrationPage({
                   </span>
                 </div>
               )}
+              {event.registration_deadline && (
+                <div className="flex items-center gap-2.5 text-sm text-gray-600">
+                  <span className="text-base">⏰</span>
+                  <span>
+                    Sista anmälningsdag: {formatSwedishDate(event.registration_deadline)}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Registration form or fullbokat */}
-        {isFull ? (
+        {isPastDeadline ? (
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 text-center">
+            <p className="text-4xl mb-3">🔒</p>
+            <h2 className="font-semibold text-gray-900 text-lg">Anmälan är stängd</h2>
+            <p className="text-gray-600 text-sm mt-2">
+              Sista anmälningsdag var {formatSwedishDate(event.registration_deadline)}.
+            </p>
+            <p className="text-gray-500 text-sm mt-1">
+              Kontakta arrangören om du har frågor.
+            </p>
+          </div>
+        ) : isFull ? (
           <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-8 text-center">
             <p className="text-4xl mb-3">😔</p>
             <h2 className="font-semibold text-yellow-900 text-lg">Eventen är fullbokat</h2>

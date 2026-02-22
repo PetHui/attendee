@@ -25,6 +25,9 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
       ? new Date(event.ends_at).toISOString().slice(0, 16)
       : '',
     max_participants: event?.max_participants?.toString() ?? '',
+    registration_deadline: event?.registration_deadline
+      ? new Date(event.registration_deadline).toISOString().slice(0, 16)
+      : '',
     status: event?.status ?? 'draft',
   })
 
@@ -45,6 +48,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
       starts_at: form.starts_at || null,
       ends_at: form.ends_at || null,
       max_participants: form.max_participants ? parseInt(form.max_participants) : null,
+      registration_deadline: form.registration_deadline || null,
     }
 
     const url = event ? `/api/events/${event.id}` : '/api/events'
@@ -148,6 +152,19 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
             placeholder="Obegränsat"
           />
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Sista anmälningsdag</label>
+          <input
+            type="datetime-local"
+            name="registration_deadline"
+            value={form.registration_deadline}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
           <select

@@ -21,6 +21,11 @@ export async function POST(request: Request) {
     )
   }
 
+  // Check registration deadline
+  if (event.registration_deadline && new Date(event.registration_deadline) < new Date()) {
+    return NextResponse.json({ error: 'Anmälningstiden har gått ut.' }, { status: 409 })
+  }
+
   // Check max participants
   if (event.max_participants) {
     const { count } = await supabase
