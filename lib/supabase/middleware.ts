@@ -29,7 +29,7 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
   const isProtected =
-    pathname.startsWith('/dashboard') || pathname.startsWith('/checkin')
+    pathname.startsWith('/dashboard') || pathname.startsWith('/checkin') || pathname.startsWith('/superadmin')
   const isAuthPage = pathname === '/login'
 
   if (isProtected && !user) {

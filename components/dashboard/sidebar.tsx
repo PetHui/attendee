@@ -16,7 +16,10 @@ export default function Sidebar({ user }: { user: UserProfile | null }) {
     router.refresh()
   }
 
-  const navItems = [{ href: '/dashboard', label: 'Event', icon: '📅' }]
+  const navItems = [
+    { href: '/dashboard', label: 'Event', icon: '📅' },
+    ...(user?.role === 'superadmin' ? [{ href: '/superadmin', label: 'Superadmin', icon: '⚙️' }] : []),
+  ]
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0">

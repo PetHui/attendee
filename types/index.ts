@@ -1,4 +1,4 @@
-export type UserRole = 'owner' | 'admin' | 'staff'
+export type UserRole = 'superadmin' | 'owner' | 'admin' | 'staff'
 export type EventStatus = 'draft' | 'published' | 'closed' | 'archived'
 export type FieldType = 'text' | 'select' | 'checkbox'
 
