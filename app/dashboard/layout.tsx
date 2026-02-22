@@ -16,8 +16,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('id', user.id)
     .single()
 
+  const brand = userData?.organization?.primary_color ?? '#6366f1'
+
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div
+      className="flex h-screen bg-gray-50 overflow-hidden"
+      style={{ '--brand': brand } as React.CSSProperties}
+    >
       <Sidebar user={userData} />
       <main className="flex-1 overflow-auto">{children}</main>
     </div>

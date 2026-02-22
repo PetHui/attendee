@@ -21,11 +21,15 @@ export default function Sidebar({ user }: { user: UserProfile | null }) {
     ...(user?.role === 'superadmin' ? [{ href: '/superadmin', label: 'Superadmin', icon: '⚙️' }] : []),
   ]
 
+  const canAccessSettings = user?.role === 'owner' || user?.role === 'admin'
+
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0">
       <div className="p-6 border-b border-gray-200">
         <Link href="/dashboard">
-          <h1 className="text-2xl font-bold text-indigo-600">Attendee</h1>
+          <h1 className="text-2xl font-bold" style={{ color: 'var(--brand)' }}>
+            Attendee
+          </h1>
         </Link>
         {user?.organization && (
           <p className="text-sm text-gray-500 mt-1 truncate">{user.organization.name}</p>
@@ -41,10 +45,16 @@ export default function Sidebar({ user }: { user: UserProfile | null }) {
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'text-gray-600 hover:bg-gray-100'
+                isActive ? '' : 'text-gray-600 hover:bg-gray-100'
               }`}
+              style={
+                isActive
+                  ? {
+                      color: 'var(--brand)',
+                      backgroundColor: 'color-mix(in srgb, var(--brand) 10%, white)',
+                    }
+                  : undefined
+              }
             >
               <span>{item.icon}</span>
               {item.label}
@@ -53,9 +63,35 @@ export default function Sidebar({ user }: { user: UserProfile | null }) {
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-bold text-indigo-700">
+      <div className="p-4 border-t border-gray-200 space-y-1">
+        {canAccessSettings && (
+          <Link
+            href="/dashboard/settings"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full ${
+              pathname === '/dashboard/settings' ? '' : 'text-gray-600 hover:bg-gray-100'
+            }`}
+            style={
+              pathname === '/dashboard/settings'
+                ? {
+                    color: 'var(--brand)',
+                    backgroundColor: 'color-mix(in srgb, var(--brand) 10%, white)',
+                  }
+                : undefined
+            }
+          >
+            <span>🎨</span>
+            Inställningar
+          </Link>
+        )}
+
+        <div className="flex items-center gap-3 px-2 py-2">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+            style={{
+              backgroundColor: 'color-mix(in srgb, var(--brand) 15%, white)',
+              color: 'var(--brand)',
+            }}
+          >
             {user?.name?.[0]?.toUpperCase() ?? '?'}
           </div>
           <div className="flex-1 min-w-0">
@@ -63,6 +99,7 @@ export default function Sidebar({ user }: { user: UserProfile | null }) {
             <p className="text-xs text-gray-500 truncate">{user?.email}</p>
           </div>
         </div>
+
         <button
           onClick={handleSignOut}
           className="w-full text-left text-sm text-gray-500 hover:text-red-600 transition-colors px-2 py-1 rounded"

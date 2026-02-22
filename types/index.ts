@@ -7,6 +7,7 @@ export interface Organization {
   name: string
   slug: string
   logo_url: string | null
+  primary_color: string | null
   created_at: string
 }
 
