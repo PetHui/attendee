@@ -52,7 +52,15 @@ export default async function OrganizationDetailPage({
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900">Användare</h2>
-          <span className="text-sm text-gray-500">{users?.length ?? 0} st</span>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-500">{users?.length ?? 0} st</span>
+            <Link
+              href={`/superadmin/organizations/${org.id}/users/new`}
+              className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+            >
+              + Lägg till användare
+            </Link>
+          </div>
         </div>
 
         {!users?.length ? (
