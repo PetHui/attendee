@@ -6,15 +6,16 @@ import { formatSwedishDate } from '@/lib/utils'
 export default async function RegistrationPage({
   params,
 }: {
-  params: { orgSlug: string; eventId: string }
+  params: Promise<{ orgSlug: string; eventId: string }>
 }) {
+  const { orgSlug, eventId } = await params
   const supabase = createServiceClient()
 
   // Find organization by slug
   const { data: org } = await supabase
     .from('organizations')
     .select('id, name')
-    .eq('slug', params.orgSlug)
+    .eq('slug', orgSlug)
     .single()
 
   if (!org) notFound()
@@ -23,7 +24,7 @@ export default async function RegistrationPage({
   const { data: event } = await supabase
     .from('events')
     .select('*')
-    .eq('id', params.eventId)
+    .eq('id', eventId)
     .eq('organization_id', org.id)
     .eq('status', 'published')
     .single()

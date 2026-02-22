@@ -3,7 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import ParticipantsTable from '@/components/dashboard/participants-table'
 import Link from 'next/link'
 
-export default async function ParticipantsPage({ params }: { params: { id: string } }) {
+export default async function ParticipantsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = await createClient()
   const {
     data: { user },
@@ -19,7 +20,7 @@ export default async function ParticipantsPage({ params }: { params: { id: strin
   const { data: event } = await supabase
     .from('events')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('organization_id', userData?.organization_id)
     .single()
 
@@ -28,13 +29,13 @@ export default async function ParticipantsPage({ params }: { params: { id: strin
   const { data: fields } = await supabase
     .from('registration_fields')
     .select('*')
-    .eq('event_id', params.id)
+    .eq('event_id', id)
     .order('sort_order')
 
   const { data: participants } = await supabase
     .from('participants')
     .select('*, field_values:participant_field_values(*)')
-    .eq('event_id', params.id)
+    .eq('event_id', id)
     .order('created_at', { ascending: false })
 
   const checkedIn = participants?.filter((p) => p.checked_in_at).length ?? 0
@@ -59,7 +60,7 @@ export default async function ParticipantsPage({ params }: { params: { id: strin
               {checkedIn} / {total} incheckade
             </span>
             <Link
-              href={`/checkin/${params.id}`}
+              href={`/checkin/${id}`}
               className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
             >
               Gå till incheckning

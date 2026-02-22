@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = await createClient()
   const {
     data: { user },
@@ -22,7 +23,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { data: event } = await supabase
     .from('events')
     .select('id')
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('organization_id', userData.organization_id)
     .single()
 
@@ -31,11 +32,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const { fields } = await request.json()
 
   // Replace all fields
-  await supabase.from('registration_fields').delete().eq('event_id', params.id)
+  await supabase.from('registration_fields').delete().eq('event_id', id)
 
   if (fields.length > 0) {
     const toInsert = fields.map((f: any, idx: number) => ({
-      event_id: params.id,
+      event_id: id,
       label: f.label,
       field_type: f.field_type,
       required: f.required,

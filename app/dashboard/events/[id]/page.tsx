@@ -3,7 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import EventForm from '@/components/dashboard/event-form'
 import Link from 'next/link'
 
-export default async function EditEventPage({ params }: { params: { id: string } }) {
+export default async function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = await createClient()
   const {
     data: { user },
@@ -19,7 +20,7 @@ export default async function EditEventPage({ params }: { params: { id: string }
   const { data: event } = await supabase
     .from('events')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('organization_id', userData?.organization_id)
     .single()
 
