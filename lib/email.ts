@@ -39,6 +39,7 @@ export async function sendConfirmationEmail({
     margin: 2,
     color: { dark: '#1e1b4b', light: '#ffffff' },
   })
+  const qrBase64 = `data:image/png;base64,${qrBuffer.toString('base64')}`
 
   const html = `<!DOCTYPE html>
 <html lang="sv">
@@ -80,7 +81,7 @@ export async function sendConfirmationEmail({
                   <td style="padding:24px;background:#f9fafb;border:2px dashed #d1d5db;border-radius:8px;text-align:center;">
                     <p style="font-size:15px;font-weight:600;color:#374151;margin:0 0 4px;">Din QR-kod för incheckning</p>
                     <p style="font-size:13px;color:#9ca3af;margin:0 0 16px;">Visa denna kod vid entrén</p>
-                    <img src="cid:qrcode" alt="QR-kod" width="200" height="200" style="display:block;margin:0 auto;border-radius:4px;" />
+                    <img src="${qrBase64}" alt="QR-kod" width="200" height="200" style="display:block;margin:0 auto;border-radius:4px;" />
                     <p style="font-size:12px;color:#9ca3af;margin:16px 0 0;">Spara detta e-postmeddelande eller skärmdumpa QR-koden.</p>
                   </td>
                 </tr>
@@ -108,13 +109,5 @@ export async function sendConfirmationEmail({
     to,
     subject: `Bekräftelse: ${eventTitle}`,
     html,
-    attachments: [
-      {
-        filename: 'qr-kod.png',
-        content: qrBuffer,
-        content_id: 'qrcode',
-        inline: true,
-      },
-    ],
   })
 }
