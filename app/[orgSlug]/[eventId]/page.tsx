@@ -14,7 +14,7 @@ export default async function RegistrationPage({
   // Find organization by slug
   const { data: org } = await supabase
     .from('organizations')
-    .select('id, name')
+    .select('id, name, primary_color')
     .eq('slug', orgSlug)
     .single()
 
@@ -51,13 +51,21 @@ export default async function RegistrationPage({
     event.registration_deadline != null &&
     new Date(event.registration_deadline) < new Date()
 
+  const brand = org.primary_color ?? '#6366f1'
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white py-12 px-4">
+    <div
+      className="min-h-screen py-12 px-4"
+      style={{
+        '--brand': brand,
+        background: `linear-gradient(to bottom right, color-mix(in srgb, ${brand} 8%, white), white)`,
+      } as React.CSSProperties}
+    >
       <div className="max-w-lg mx-auto">
         {/* Event card */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-6">
-          <div className="bg-indigo-600 px-6 py-8">
-            <p className="text-indigo-200 text-sm font-medium mb-1">{org.name}</p>
+          <div className="px-6 py-8" style={{ backgroundColor: brand }}>
+            <p className="text-sm font-medium mb-1" style={{ color: 'color-mix(in srgb, white 70%, transparent)' }}>{org.name}</p>
             <h1 className="text-2xl font-bold text-white leading-tight">{event.title}</h1>
           </div>
           <div className="px-6 py-5 space-y-3">
@@ -126,7 +134,7 @@ export default async function RegistrationPage({
 
         <p className="text-center text-xs text-gray-400 mt-6">
           Powered by{' '}
-          <span className="font-semibold text-indigo-400">Attendee</span>
+          <span className="font-semibold text-brand">Attendee</span>
         </p>
       </div>
     </div>

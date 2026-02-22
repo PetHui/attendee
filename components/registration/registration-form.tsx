@@ -98,7 +98,7 @@ export default function RegistrationForm({
               value={values[field.id] ?? ''}
               onChange={(e) => handleChange(field.id, e.target.value)}
               required={field.required}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus-ring-brand"
             />
           )}
 
@@ -107,7 +107,7 @@ export default function RegistrationForm({
               value={values[field.id] ?? ''}
               onChange={(e) => handleChange(field.id, e.target.value)}
               required={field.required}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus-ring-brand"
             >
               <option value="">Välj alternativ...</option>
               {((field.options as string[]) ?? []).map((opt) => (
@@ -127,7 +127,8 @@ export default function RegistrationForm({
                   handleChange(field.id, e.target.checked ? 'true' : 'false')
                 }
                 required={field.required}
-                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                className="mt-0.5 h-4 w-4 rounded border-gray-300 focus-ring-brand"
+                style={{ accentColor: 'var(--brand)' }}
               />
               <span className="text-sm text-gray-700 leading-tight">
                 {field.label}
@@ -141,7 +142,7 @@ export default function RegistrationForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium text-sm hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
+        className="w-full bg-brand text-white py-3 px-4 rounded-lg font-medium text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity mt-2"
       >
         {loading ? 'Skickar anmälan...' : 'Skicka anmälan'}
       </button>

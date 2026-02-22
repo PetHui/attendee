@@ -88,7 +88,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
           value={form.title}
           onChange={handleChange}
           required
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus-ring-brand"
           placeholder="Årets konferens"
         />
       </div>
@@ -100,7 +100,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
           value={form.description}
           onChange={handleChange}
           rows={4}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus-ring-brand resize-none"
           placeholder="Beskriv eventet..."
         />
       </div>
@@ -111,7 +111,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
           name="location"
           value={form.location}
           onChange={handleChange}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus-ring-brand"
           placeholder="Mässhallen, Stockholm"
         />
       </div>
@@ -124,7 +124,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
             name="starts_at"
             value={form.starts_at}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus-ring-brand"
           />
         </div>
         <div>
@@ -134,7 +134,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
             name="ends_at"
             value={form.ends_at}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus-ring-brand"
           />
         </div>
       </div>
@@ -148,7 +148,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
             value={form.max_participants}
             onChange={handleChange}
             min="1"
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus-ring-brand"
             placeholder="Obegränsat"
           />
         </div>
@@ -159,7 +159,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
             name="registration_deadline"
             value={form.registration_deadline}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus-ring-brand"
           />
         </div>
       </div>
@@ -171,7 +171,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
             name="status"
             value={form.status}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus-ring-brand"
           >
             <option value="draft">Utkast</option>
             <option value="published">Publicerat</option>
@@ -185,7 +185,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          className="bg-brand text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
         >
           {loading ? 'Sparar...' : event ? 'Uppdatera event' : 'Skapa event'}
         </button>

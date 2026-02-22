@@ -65,7 +65,7 @@ export default async function DashboardPage() {
         </div>
         <Link
           href="/dashboard/events/new"
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+          className="bg-brand text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
         >
           + Skapa event
         </Link>
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
           <p className="text-gray-500 mb-6">Skapa ditt första event för att komma igång</p>
           <Link
             href="/dashboard/events/new"
-            className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+            className="bg-brand text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
           >
             Skapa event
           </Link>
@@ -135,25 +135,25 @@ export default async function DashboardPage() {
                         <EventStatusButton eventId={event.id} status={event.status} />
                         <Link
                           href={`/dashboard/events/${event.id}`}
-                          className="text-xs text-gray-600 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition-colors"
+                          className="text-xs text-gray-600 hover:text-brand px-2 py-1 rounded hover:bg-brand-subtle transition-colors"
                         >
                           Redigera
                         </Link>
                         <Link
                           href={`/dashboard/events/${event.id}/fields`}
-                          className="text-xs text-gray-600 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition-colors"
+                          className="text-xs text-gray-600 hover:text-brand px-2 py-1 rounded hover:bg-brand-subtle transition-colors"
                         >
                           Formulär
                         </Link>
                         <Link
                           href={`/dashboard/events/${event.id}/participants`}
-                          className="text-xs text-gray-600 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition-colors"
+                          className="text-xs text-gray-600 hover:text-brand px-2 py-1 rounded hover:bg-brand-subtle transition-colors"
                         >
                           Deltagare
                         </Link>
                         <Link
                           href={`/checkin/${event.id}`}
-                          className="text-xs bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700 transition-colors"
+                          className="text-xs bg-brand text-white px-2 py-1 rounded hover:opacity-90 transition-opacity"
                         >
                           Incheckning
                         </Link>

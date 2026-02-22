@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .text-brand { color: var(--brand); }
+  .bg-brand { background-color: var(--brand); }
+  .border-brand { border-color: var(--brand); }
+  .bg-brand-subtle { background-color: color-mix(in srgb, var(--brand) 10%, white); }
+  .focus-ring-brand:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--brand);
+  }
+}

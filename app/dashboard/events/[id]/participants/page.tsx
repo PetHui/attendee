@@ -46,7 +46,7 @@ export default async function ParticipantsPage({ params }: { params: Promise<{ i
       <div className="mb-6">
         <Link
           href={`/dashboard/events/${event.id}`}
-          className="text-sm text-gray-500 hover:text-indigo-600 transition-colors"
+          className="text-sm text-gray-500 hover:text-brand transition-colors"
         >
           ← Tillbaka till event
         </Link>
@@ -61,7 +61,7 @@ export default async function ParticipantsPage({ params }: { params: Promise<{ i
             </span>
             <Link
               href={`/checkin/${id}`}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+              className="bg-brand text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
             >
               Gå till incheckning
             </Link>

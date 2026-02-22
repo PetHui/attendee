@@ -37,7 +37,7 @@ export default async function FieldsPage({ params }: { params: Promise<{ id: str
       <div className="mb-6">
         <Link
           href={`/dashboard/events/${event.id}`}
-          className="text-sm text-gray-500 hover:text-indigo-600 transition-colors"
+          className="text-sm text-gray-500 hover:text-brand transition-colors"
         >
           ← Tillbaka till event
         </Link>

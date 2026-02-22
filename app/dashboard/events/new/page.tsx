@@ -25,7 +25,7 @@ export default async function NewEventPage() {
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="text-sm text-gray-500 hover:text-indigo-600 transition-colors"
+          className="text-sm text-gray-500 hover:text-brand transition-colors"
         >
           ← Tillbaka till event
         </Link>

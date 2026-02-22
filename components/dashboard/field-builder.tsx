@@ -85,7 +85,7 @@ function SortableField({
                 value={field.label}
                 onChange={(e) => onUpdate(field.id, { label: e.target.value })}
                 placeholder="Fältnamn"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus-ring-brand"
               />
             </div>
             <select
@@ -93,7 +93,7 @@ function SortableField({
               onChange={(e) =>
                 onUpdate(field.id, { field_type: e.target.value as FieldType })
               }
-              className="border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="border border-gray-200 rounded-lg px-2 py-2 text-sm focus-ring-brand"
             >
               <option value="text">Text</option>
               <option value="select">Välj alternativ</option>
@@ -136,7 +136,7 @@ function SortableField({
                     }
                   }}
                   placeholder="Lägg till alternativ..."
-                  className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus-ring-brand"
                 />
                 <button
                   type="button"
@@ -154,7 +154,8 @@ function SortableField({
               type="checkbox"
               checked={field.required}
               onChange={(e) => onUpdate(field.id, { required: e.target.checked })}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              className="rounded border-gray-300 focus-ring-brand"
+              style={{ accentColor: 'var(--brand)' }}
             />
             <span className="text-xs text-gray-600">Obligatoriskt fält</span>
           </label>
@@ -298,7 +299,7 @@ export default function FieldBuilder({
         <button
           type="button"
           onClick={addField}
-          className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm text-brand border border-brand hover:bg-brand-subtle rounded-lg transition-colors"
         >
           + Lägg till fält
         </button>
@@ -306,7 +307,7 @@ export default function FieldBuilder({
           type="button"
           onClick={saveFields}
           disabled={saving}
-          className="px-6 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          className="px-6 py-2 text-sm font-medium bg-brand text-white rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
         >
           {saving ? 'Sparar...' : 'Spara formulär'}
         </button>

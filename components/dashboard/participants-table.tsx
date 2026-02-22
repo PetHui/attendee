@@ -94,7 +94,7 @@ export default function ParticipantsTable({
             placeholder="Sök deltagare..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus-ring-brand"
           />
           <button
             onClick={downloadCSV}
@@ -114,9 +114,10 @@ export default function ParticipantsTable({
               onClick={() => setFilter(opt.value)}
               className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
                 filter === opt.value
-                  ? 'bg-indigo-600 text-white'
+                  ? 'text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
+              style={filter === opt.value ? { backgroundColor: 'var(--brand)' } : undefined}
             >
               {opt.label}
             </button>
@@ -208,7 +209,7 @@ export default function ParticipantsTable({
                       <button
                         onClick={() => handleCheckin(p.id, p.qr_code)}
                         disabled={checkingIn === p.id}
-                        className="px-3 py-1 text-xs font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-3 py-1 text-xs font-medium text-white bg-brand rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
                       >
                         {checkingIn === p.id ? 'Checkar in...' : 'Checka in'}
                       </button>

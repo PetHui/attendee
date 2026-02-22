@@ -34,7 +34,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="text-sm text-gray-500 hover:text-indigo-600 transition-colors"
+          className="text-sm text-gray-500 hover:text-brand transition-colors"
         >
           ← Tillbaka till event
         </Link>
@@ -50,21 +50,21 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
       <div className="grid grid-cols-3 gap-3 mb-4">
         <Link
           href={`/dashboard/events/${event.id}/fields`}
-          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-indigo-300 transition-colors"
+          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
         >
           <p className="text-2xl mb-1">📋</p>
           <p className="text-sm font-medium text-gray-700">Formulärfält</p>
         </Link>
         <Link
           href={`/dashboard/events/${event.id}/participants`}
-          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-indigo-300 transition-colors"
+          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
         >
           <p className="text-2xl mb-1">👥</p>
           <p className="text-sm font-medium text-gray-700">Deltagare</p>
         </Link>
         <Link
           href={`/checkin/${event.id}`}
-          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-indigo-300 transition-colors"
+          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
         >
           <p className="text-2xl mb-1">📱</p>
           <p className="text-sm font-medium text-gray-700">Incheckning</p>
@@ -75,13 +75,13 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
         <div className="bg-gray-50 rounded-xl border border-gray-200 p-4">
           <p className="text-sm font-medium text-gray-700 mb-1">Publik anmälningslänk</p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 text-xs bg-white border border-gray-200 rounded px-2 py-1.5 text-indigo-600 break-all">
+            <code className="flex-1 text-xs bg-white border border-gray-200 rounded px-2 py-1.5 text-brand break-all">
               {appUrl}/{orgSlug}/{event.id}
             </code>
             <Link
               href={`/${orgSlug}/${event.id}`}
               target="_blank"
-              className="text-xs text-indigo-600 hover:text-indigo-800 whitespace-nowrap"
+              className="text-xs text-brand hover:opacity-70 whitespace-nowrap transition-opacity"
             >
               Öppna ↗
             </Link>
