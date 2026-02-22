@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getImpersonatedOrgId } from '@/lib/impersonation'
 import { formatShortDate, EVENT_STATUS_LABELS, EVENT_STATUS_COLORS } from '@/lib/utils'
 import EventStatusButton from '@/components/dashboard/event-status-button'
 
@@ -13,14 +14,31 @@ export default async function DashboardPage() {
 
   const { data: userData } = await supabase
     .from('users')
-    .select('organization_id, organization:organizations(slug)')
+    .select('organization_id, role, organization:organizations(slug)')
     .eq('id', user.id)
     .single()
+
+  const impersonatedOrgId =
+    userData?.role === 'superadmin' ? await getImpersonatedOrgId() : null
+
+  const effectiveOrgId = impersonatedOrgId ?? userData?.organization_id
+
+  // Hämta slug för impersonerad org om nödvändigt
+  let orgSlug = (userData?.organization as any)?.slug ?? ''
+  if (impersonatedOrgId) {
+    const serviceSupabase = createServiceClient()
+    const { data: impOrg } = await serviceSupabase
+      .from('organizations')
+      .select('slug')
+      .eq('id', impersonatedOrgId)
+      .single()
+    orgSlug = impOrg?.slug ?? ''
+  }
 
   const { data: events } = await supabase
     .from('events')
     .select('*')
-    .eq('organization_id', userData?.organization_id)
+    .eq('organization_id', effectiveOrgId)
     .order('created_at', { ascending: false })
 
   // Participant counts per event
@@ -37,8 +55,6 @@ export default async function DashboardPage() {
       if (row.checked_in_at) counts[row.event_id].checkedIn++
     }
   }
-
-  const orgSlug = (userData?.organization as any)?.slug ?? ''
 
   return (
     <div className="p-8">

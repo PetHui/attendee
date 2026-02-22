@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getImpersonatedOrgId } from '@/lib/impersonation'
 
 export async function PATCH(request: Request) {
   const supabase = await createClient()
@@ -17,8 +18,17 @@ export async function PATCH(request: Request) {
     .eq('id', user.id)
     .single()
 
-  if (!userData || !['owner', 'admin'].includes(userData.role)) {
+  if (!userData || !['owner', 'admin', 'superadmin'].includes(userData.role)) {
     return NextResponse.json({ error: 'Saknar behörighet' }, { status: 403 })
+  }
+
+  let effectiveOrgId = userData.organization_id
+  if (userData.role === 'superadmin') {
+    const impersonatedId = await getImpersonatedOrgId()
+    if (!impersonatedId) {
+      return NextResponse.json({ error: 'Ingen organisation vald.' }, { status: 400 })
+    }
+    effectiveOrgId = impersonatedId
   }
 
   const { primary_color } = await request.json()
@@ -27,10 +37,12 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: 'Ogiltig hexkod.' }, { status: 400 })
   }
 
-  const { error } = await supabase
+  // Använd service client för att kunna uppdatera vilken org som helst
+  const serviceSupabase = createServiceClient()
+  const { error } = await serviceSupabase
     .from('organizations')
     .update({ primary_color })
-    .eq('id', userData.organization_id)
+    .eq('id', effectiveOrgId)
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })

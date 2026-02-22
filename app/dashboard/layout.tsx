@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getImpersonatedOrgId } from '@/lib/impersonation'
 import Sidebar from '@/components/dashboard/sidebar'
+import ImpersonationBanner from '@/components/dashboard/impersonation-banner'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -16,15 +18,45 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('id', user.id)
     .single()
 
-  const brand = userData?.organization?.primary_color ?? '#6366f1'
+  const impersonatedOrgId =
+    userData?.role === 'superadmin' ? await getImpersonatedOrgId() : null
+
+  // Superadmin utan impersonering skickas tillbaka till superadmin-panelen
+  if (userData?.role === 'superadmin' && !impersonatedOrgId) {
+    redirect('/superadmin')
+  }
+
+  // Läs in den impersonerade organisationens data och sätt på userData
+  let effectiveUserData = userData
+  if (impersonatedOrgId) {
+    const serviceSupabase = createServiceClient()
+    const { data: impOrg } = await serviceSupabase
+      .from('organizations')
+      .select('*')
+      .eq('id', impersonatedOrgId)
+      .single()
+
+    if (impOrg) {
+      effectiveUserData = {
+        ...userData,
+        organization_id: impersonatedOrgId,
+        organization: impOrg,
+      }
+    }
+  }
+
+  const brand = effectiveUserData?.organization?.primary_color ?? '#6366f1'
 
   return (
     <div
       className="flex h-screen bg-gray-50 overflow-hidden"
       style={{ '--brand': brand } as React.CSSProperties}
     >
-      <Sidebar user={userData} />
-      <main className="flex-1 overflow-auto">{children}</main>
+      <Sidebar user={effectiveUserData} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {impersonatedOrgId && <ImpersonationBanner orgId={impersonatedOrgId} />}
+        <main className="flex-1 overflow-auto">{children}</main>
+      </div>
     </div>
   )
 }

@@ -76,6 +76,7 @@ export default async function SuperadminPage() {
                 <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Skapad
                 </th>
+                <th className="px-6 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -104,6 +105,14 @@ export default async function SuperadminPage() {
                     <span className="text-sm text-gray-500">
                       {new Date(org.created_at).toLocaleDateString('sv-SE')}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <Link
+                      href={`/api/superadmin/impersonate?orgId=${org.id}`}
+                      className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
+                    >
+                      Hantera →
+                    </Link>
                   </td>
                 </tr>
               ))}

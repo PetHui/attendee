@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getImpersonatedOrgId } from '@/lib/impersonation'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -14,8 +15,17 @@ export async function POST(request: Request) {
     .eq('id', user.id)
     .single()
 
-  if (!userData || !['owner', 'admin'].includes(userData.role)) {
+  if (!userData || !['owner', 'admin', 'superadmin'].includes(userData.role)) {
     return NextResponse.json({ error: 'Saknar behörighet' }, { status: 403 })
+  }
+
+  let effectiveOrgId = userData.organization_id
+  if (userData.role === 'superadmin') {
+    const impersonatedId = await getImpersonatedOrgId()
+    if (!impersonatedId) {
+      return NextResponse.json({ error: 'Ingen organisation vald.' }, { status: 400 })
+    }
+    effectiveOrgId = impersonatedId
   }
 
   const body = await request.json()
@@ -23,7 +33,7 @@ export async function POST(request: Request) {
 
   const { data, error } = await supabase
     .from('events')
-    .insert({ ...fields, organization_id: userData.organization_id })
+    .insert({ ...fields, organization_id: effectiveOrgId })
     .select()
     .single()
 
