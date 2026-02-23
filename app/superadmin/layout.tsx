@@ -39,13 +39,6 @@ export default async function SuperadminLayout({ children }: { children: React.R
             <span>🏢</span>
             Organisationer
           </Link>
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
-          >
-            <span>📅</span>
-            Dashboard
-          </Link>
         </nav>
 
         <div className="p-4 border-t border-gray-200 space-y-1">
