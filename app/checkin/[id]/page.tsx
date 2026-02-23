@@ -1,41 +1,25 @@
-import { redirect, notFound } from 'next/navigation'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { getImpersonatedOrgId } from '@/lib/impersonation'
+import { notFound } from 'next/navigation'
+import { createServiceClient } from '@/lib/supabase/server'
 import CheckinClient from '@/components/checkin/checkin-client'
 
 export default async function CheckinPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const supabase = createServiceClient()
 
-  const { data: userData } = await supabase
-    .from('users')
-    .select('organization_id, role')
-    .eq('id', user.id)
-    .single()
-
-  const impersonatedOrgId = userData?.role === 'superadmin' ? await getImpersonatedOrgId() : null
-  const effectiveOrgId = impersonatedOrgId ?? userData?.organization_id
-  const dataClient = impersonatedOrgId ? createServiceClient() : supabase
-
-  const { data: event } = await dataClient
+  const { data: event } = await supabase
     .from('events')
     .select('*')
-    .eq('id', id)
-    .eq('organization_id', effectiveOrgId)
+    .eq('checkin_token', id)
     .single()
 
   if (!event) notFound()
 
-  const { count: totalCount } = await dataClient
+  const { count: totalCount } = await supabase
     .from('participants')
     .select('*', { count: 'exact', head: true })
     .eq('event_id', event.id)
 
-  const { count: checkedInCount } = await dataClient
+  const { count: checkedInCount } = await supabase
     .from('participants')
     .select('*', { count: 'exact', head: true })
     .eq('event_id', event.id)
@@ -46,6 +30,7 @@ export default async function CheckinPage({ params }: { params: Promise<{ id: st
       event={event}
       initialTotal={totalCount ?? 0}
       initialCheckedIn={checkedInCount ?? 0}
+      checkinToken={id}
     />
   )
 }

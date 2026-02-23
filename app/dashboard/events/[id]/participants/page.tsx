@@ -65,7 +65,7 @@ export default async function ParticipantsPage({ params }: { params: Promise<{ i
               {checkedIn} / {total} incheckade
             </span>
             <Link
-              href={`/checkin/${id}`}
+              href={`/checkin/${event.checkin_token}`}
               className="bg-brand text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
             >
               Gå till incheckning

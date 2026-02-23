@@ -155,7 +155,7 @@ export default async function DashboardPage() {
                           Deltagare
                         </Link>
                         <Link
-                          href={`/checkin/${event.id}`}
+                          href={`/checkin/${event.checkin_token}`}
                           className="text-xs bg-brand text-white px-2 py-1 rounded hover:opacity-90 transition-opacity"
                         >
                           Incheckning

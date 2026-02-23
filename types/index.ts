@@ -32,6 +32,7 @@ export interface Event {
   max_participants: number | null
   registration_deadline: string | null
   status: EventStatus
+  checkin_token: string
   created_at: string
 }
 

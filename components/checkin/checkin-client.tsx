@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import type { Event } from '@/types'
 import { formatSwedishDate } from '@/lib/utils'
@@ -36,10 +35,12 @@ export default function CheckinClient({
   event,
   initialTotal,
   initialCheckedIn,
+  checkinToken,
 }: {
   event: Event
   initialTotal: number
   initialCheckedIn: number
+  checkinToken: string
 }) {
   const [total, setTotal] = useState(initialTotal)
   const [checkedIn, setCheckedIn] = useState(initialCheckedIn)
@@ -99,10 +100,10 @@ export default function CheckinClient({
       setShowScanner(false)
 
       try {
-        const res = await fetch('/api/checkin', {
+        const res = await fetch('/api/checkin/public', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ qrCode }),
+          body: JSON.stringify({ qrCode, checkinToken }),
         })
 
         const data = await res.json()
@@ -133,12 +134,12 @@ export default function CheckinClient({
     <div className="min-h-screen bg-gray-950 text-white flex flex-col">
       {/* Header */}
       <div className="px-5 pt-6 pb-4 flex items-start gap-4">
-        <Link
-          href="/dashboard"
+        <button
+          onClick={() => window.history.back()}
           className="text-gray-500 hover:text-gray-300 transition-colors text-sm mt-0.5"
         >
           ←
-        </Link>
+        </button>
         <div className="flex-1 min-w-0">
           <h1 className="text-lg font-bold leading-tight">{event.title}</h1>
           {event.starts_at && (

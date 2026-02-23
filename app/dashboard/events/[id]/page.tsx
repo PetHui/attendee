@@ -2,6 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getImpersonatedOrgId } from '@/lib/impersonation'
 import EventForm from '@/components/dashboard/event-form'
+import CheckinLinkPanel from '@/components/dashboard/checkin-link-panel'
 import Link from 'next/link'
 
 export default async function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
@@ -77,7 +78,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
           <p className="text-sm font-medium text-gray-700">Deltagare</p>
         </Link>
         <Link
-          href={`/checkin/${event.id}`}
+          href={`/checkin/${event.checkin_token}`}
           className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
         >
           <p className="text-2xl mb-1">📱</p>
@@ -102,6 +103,12 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
           </div>
         </div>
       )}
+
+      <CheckinLinkPanel
+        eventId={event.id}
+        checkinToken={event.checkin_token}
+        appUrl={appUrl}
+      />
     </div>
   )
 }
