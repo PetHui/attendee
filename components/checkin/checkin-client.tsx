@@ -133,19 +133,11 @@ export default function CheckinClient({
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col">
       {/* Header */}
-      <div className="px-5 pt-6 pb-4 flex items-start gap-4">
-        <button
-          onClick={() => window.history.back()}
-          className="text-gray-500 hover:text-gray-300 transition-colors text-sm mt-0.5"
-        >
-          ←
-        </button>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-lg font-bold leading-tight">{event.title}</h1>
-          {event.starts_at && (
-            <p className="text-gray-400 text-xs mt-0.5">{formatSwedishDate(event.starts_at)}</p>
-          )}
-        </div>
+      <div className="px-5 pt-6 pb-4">
+        <h1 className="text-lg font-bold leading-tight">{event.title}</h1>
+        {event.starts_at && (
+          <p className="text-gray-400 text-xs mt-0.5">{formatSwedishDate(event.starts_at)}</p>
+        )}
       </div>
 
       {/* Live counter */}
