@@ -1,5 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getImpersonatedOrgId } from '@/lib/impersonation'
 import EventForm from '@/components/dashboard/event-form'
 import Link from 'next/link'
 
@@ -17,16 +18,29 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
     .eq('id', user.id)
     .single()
 
-  const { data: event } = await supabase
+  const impersonatedOrgId = userData?.role === 'superadmin' ? await getImpersonatedOrgId() : null
+  const effectiveOrgId = impersonatedOrgId ?? userData?.organization_id
+  const dataClient = impersonatedOrgId ? createServiceClient() : supabase
+
+  const { data: event } = await dataClient
     .from('events')
     .select('*')
     .eq('id', id)
-    .eq('organization_id', userData?.organization_id)
+    .eq('organization_id', effectiveOrgId)
     .single()
 
   if (!event) notFound()
 
-  const orgSlug = (userData?.organization as any)?.slug ?? ''
+  let orgSlug = (userData?.organization as any)?.slug ?? ''
+  if (impersonatedOrgId) {
+    const { data: impOrg } = await dataClient
+      .from('organizations')
+      .select('slug')
+      .eq('id', impersonatedOrgId)
+      .single()
+    orgSlug = impOrg?.slug ?? ''
+  }
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   return (
@@ -43,7 +57,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4">
-        <EventForm event={event} organizationId={userData?.organization_id ?? ''} />
+        <EventForm event={event} organizationId={effectiveOrgId ?? ''} />
       </div>
 
       {/* Quick links */}

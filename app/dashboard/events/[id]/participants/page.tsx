@@ -1,5 +1,6 @@
 import { redirect, notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getImpersonatedOrgId } from '@/lib/impersonation'
 import ParticipantsTable from '@/components/dashboard/participants-table'
 import Link from 'next/link'
 
@@ -13,26 +14,30 @@ export default async function ParticipantsPage({ params }: { params: Promise<{ i
 
   const { data: userData } = await supabase
     .from('users')
-    .select('organization_id')
+    .select('organization_id, role')
     .eq('id', user.id)
     .single()
 
-  const { data: event } = await supabase
+  const impersonatedOrgId = userData?.role === 'superadmin' ? await getImpersonatedOrgId() : null
+  const effectiveOrgId = impersonatedOrgId ?? userData?.organization_id
+  const dataClient = impersonatedOrgId ? createServiceClient() : supabase
+
+  const { data: event } = await dataClient
     .from('events')
     .select('*')
     .eq('id', id)
-    .eq('organization_id', userData?.organization_id)
+    .eq('organization_id', effectiveOrgId)
     .single()
 
   if (!event) notFound()
 
-  const { data: fields } = await supabase
+  const { data: fields } = await dataClient
     .from('registration_fields')
     .select('*')
     .eq('event_id', id)
     .order('sort_order')
 
-  const { data: participants } = await supabase
+  const { data: participants } = await dataClient
     .from('participants')
     .select('*, field_values:participant_field_values(*)')
     .eq('event_id', id)
