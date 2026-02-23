@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import SignOutButton from '@/components/superadmin/sign-out-button'
 
 export default async function SuperadminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -47,8 +48,8 @@ export default async function SuperadminLayout({ children }: { children: React.R
           </Link>
         </nav>
 
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center gap-3">
+        <div className="p-4 border-t border-gray-200 space-y-1">
+          <div className="flex items-center gap-3 px-2 py-2">
             <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-bold text-indigo-700">
               {userData.name?.[0]?.toUpperCase() ?? '?'}
             </div>
@@ -57,6 +58,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
               <p className="text-xs text-gray-500 truncate">{userData.email}</p>
             </div>
           </div>
+          <SignOutButton />
         </div>
       </aside>
 
