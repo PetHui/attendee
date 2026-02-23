@@ -28,7 +28,7 @@ export default function ParticipantsTable({
     if (res.ok) {
       const now = new Date().toISOString()
       setLocalParticipants((prev) =>
-        prev.map((p) => (p.id === participantId ? { ...p, checked_in_at: now } : p))
+        prev.map((p) => (p.id === participantId ? { ...p, checked_in_at: now, checked_in_by: 'dashboard' } : p))
       )
     }
     setCheckingIn(null)
@@ -189,12 +189,17 @@ export default function ParticipantsTable({
                     {new Date(p.created_at).toLocaleDateString('sv-SE')}
                   </td>
                   <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
-                    {p.checked_in_at
-                      ? new Date(p.checked_in_at).toLocaleTimeString('sv-SE', {
+                    {p.checked_in_at ? (
+                      <span>
+                        {new Date(p.checked_in_at).toLocaleTimeString('sv-SE', {
                           hour: '2-digit',
                           minute: '2-digit',
-                        })
-                      : '–'}
+                        })}
+                        <span className={`ml-1.5 px-1.5 py-0.5 rounded text-xs font-medium ${p.checked_in_by ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'}`}>
+                          {p.checked_in_by ? 'Manuellt' : 'Skanner'}
+                        </span>
+                      </span>
+                    ) : '–'}
                   </td>
                   <td className="px-4 py-3 text-right">
                     {p.checked_in_at ? (
