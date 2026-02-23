@@ -18,10 +18,10 @@ export default function Sidebar({ user }: { user: UserProfile | null }) {
 
   const navItems = [
     { href: '/dashboard', label: 'Event', icon: '📅' },
-    ...(user?.role === 'superadmin' ? [{ href: '/superadmin', label: 'Superadmin', icon: '⚙️' }] : []),
   ]
 
   const canAccessSettings = user?.role === 'owner' || user?.role === 'admin'
+  const isSuperadmin = user?.role === 'superadmin'
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shrink-0">
@@ -64,6 +64,25 @@ export default function Sidebar({ user }: { user: UserProfile | null }) {
       </nav>
 
       <div className="p-4 border-t border-gray-200 space-y-1">
+        {isSuperadmin && (
+          <Link
+            href="/superadmin"
+            className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors w-full ${
+              pathname.startsWith('/superadmin') ? '' : 'text-gray-600 hover:bg-gray-100'
+            }`}
+            style={
+              pathname.startsWith('/superadmin')
+                ? {
+                    color: 'var(--brand)',
+                    backgroundColor: 'color-mix(in srgb, var(--brand) 10%, white)',
+                  }
+                : undefined
+            }
+          >
+            <span>⚙️</span>
+            Superadmin
+          </Link>
+        )}
         {canAccessSettings && (
           <Link
             href="/dashboard/settings"
