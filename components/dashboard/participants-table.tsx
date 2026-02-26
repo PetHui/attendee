@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { RegistrationField, ParticipantWithValues } from '@/types'
 import { generateCSV } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
 
 export default function ParticipantsTable({
+  eventId,
   eventTitle,
   fields,
   participants,
 }: {
+  eventId: string
   eventTitle: string
   fields: RegistrationField[]
   participants: ParticipantWithValues[]
@@ -17,6 +20,38 @@ export default function ParticipantsTable({
   const [filter, setFilter] = useState<'all' | 'checked_in' | 'not_checked_in'>('all')
   const [checkingIn, setCheckingIn] = useState<string | null>(null)
   const [localParticipants, setLocalParticipants] = useState(participants)
+
+  // Realtidsuppdatering – lyssna på incheckning från QR-skannern
+  useEffect(() => {
+    const supabase = createClient()
+
+    const channel = supabase
+      .channel(`participants-dashboard-${eventId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'participants',
+          filter: `event_id=eq.${eventId}`,
+        },
+        (payload) => {
+          const updated = payload.new as { id: string; checked_in_at: string | null; checked_in_by: string | null }
+          setLocalParticipants((prev) =>
+            prev.map((p) =>
+              p.id === updated.id
+                ? { ...p, checked_in_at: updated.checked_in_at, checked_in_by: updated.checked_in_by }
+                : p
+            )
+          )
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [eventId])
 
   async function handleCheckin(participantId: string, qrCode: string) {
     setCheckingIn(participantId)

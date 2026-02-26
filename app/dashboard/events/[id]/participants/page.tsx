@@ -75,6 +75,7 @@ export default async function ParticipantsPage({ params }: { params: Promise<{ i
       </div>
 
       <ParticipantsTable
+        eventId={id}
         eventTitle={event.title}
         fields={fields ?? []}
         participants={participants ?? []}
