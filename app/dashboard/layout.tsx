@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getImpersonatedOrgId } from '@/lib/impersonation'
-import Sidebar from '@/components/dashboard/sidebar'
+import DashboardShell from '@/components/dashboard/dashboard-shell'
 import ImpersonationBanner from '@/components/dashboard/impersonation-banner'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -48,15 +48,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const brand = effectiveUserData?.organization?.primary_color ?? '#6366f1'
 
   return (
-    <div
-      className="flex h-screen bg-gray-50 overflow-hidden"
-      style={{ '--brand': brand } as React.CSSProperties}
+    <DashboardShell
+      user={effectiveUserData}
+      brand={brand}
+      impersonationBanner={impersonatedOrgId ? <ImpersonationBanner orgId={impersonatedOrgId} /> : null}
     >
-      <Sidebar user={effectiveUserData} />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {impersonatedOrgId && <ImpersonationBanner orgId={impersonatedOrgId} />}
-        <main className="flex-1 overflow-auto">{children}</main>
-      </div>
-    </div>
+      {children}
+    </DashboardShell>
   )
 }
