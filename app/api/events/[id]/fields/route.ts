@@ -37,19 +37,51 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
   const { fields } = await request.json()
 
-  // Replace all fields
-  await dataClient.from('registration_fields').delete().eq('event_id', id)
+  // Separera befintliga fält (riktiga UUID:n) från nya (temp-ID:n som börjar med "new-")
+  const existingFields = fields.filter((f: any) => !String(f.id).startsWith('new-'))
+  const newFields = fields.filter((f: any) => String(f.id).startsWith('new-'))
+  const keptIds = existingFields.map((f: any) => f.id)
 
-  if (fields.length > 0) {
-    const toInsert = fields.map((f: any, idx: number) => ({
+  // Ta bort fält som raderades i formulärbyggaren
+  const { data: currentFields } = await dataClient
+    .from('registration_fields')
+    .select('id')
+    .eq('event_id', id)
+
+  const idsToDelete = (currentFields ?? [])
+    .map((f) => f.id)
+    .filter((fid) => !keptIds.includes(fid))
+
+  if (idsToDelete.length > 0) {
+    await dataClient.from('registration_fields').delete().in('id', idsToDelete)
+  }
+
+  // Uppdatera befintliga fält (behåller UUID:n så att deltagardata inte bryts)
+  for (const f of existingFields) {
+    const sortOrder = fields.findIndex((ff: any) => ff.id === f.id)
+    const { error } = await dataClient
+      .from('registration_fields')
+      .update({
+        label: f.label,
+        field_type: f.field_type,
+        required: f.required,
+        options: f.options?.length > 0 ? f.options : null,
+        sort_order: sortOrder,
+      })
+      .eq('id', f.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  // Infoga nya fält
+  if (newFields.length > 0) {
+    const toInsert = newFields.map((f: any) => ({
       event_id: id,
       label: f.label,
       field_type: f.field_type,
       required: f.required,
       options: f.options?.length > 0 ? f.options : null,
-      sort_order: idx,
+      sort_order: fields.findIndex((ff: any) => ff.id === f.id),
     }))
-
     const { error } = await dataClient.from('registration_fields').insert(toInsert)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   }

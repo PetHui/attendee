@@ -26,8 +26,8 @@ export default function ParticipantsTable({
     ? localParticipants.find((p) => p.id === selectedId) ?? null
     : null
 
-  // Kolumner som visas i tabellen – de 2 första fälten
-  const tableFields = fields.slice(0, 2)
+  // Kolumner som visas i tabellen – de 3 första fälten
+  const tableFields = fields.slice(0, 3)
 
   // Realtidsuppdatering – lyssna på incheckning från QR-skannern
   useEffect(() => {
