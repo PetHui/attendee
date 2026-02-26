@@ -28,7 +28,7 @@ export default function Sidebar({
     { href: '/dashboard', label: 'Event', icon: '📅' },
   ]
 
-  const canAccessSettings = user?.role === 'owner' || user?.role === 'admin'
+  const canAccessSettings = user?.role === 'owner' || user?.role === 'admin' || user?.role === 'superadmin'
   const isSuperadmin = user?.role === 'superadmin'
 
   return (
