@@ -187,9 +187,6 @@ export default function ParticipantsTable({
                   </th>
                 ))}
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
-                  Anmäld
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
                   Incheckad
                 </th>
                 <th className="px-4 py-3" />
@@ -199,7 +196,7 @@ export default function ParticipantsTable({
               {filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={tableFields.length + 4}
+                    colSpan={tableFields.length + 3}
                     className="px-4 py-10 text-center text-gray-400"
                   >
                     Inga deltagare hittades
@@ -235,9 +232,6 @@ export default function ParticipantsTable({
                         </td>
                       )
                     })}
-                    <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
-                      {new Date(p.created_at).toLocaleDateString('sv-SE')}
-                    </td>
                     <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap">
                       {p.checked_in_at ? (
                         <span>
