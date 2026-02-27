@@ -65,7 +65,7 @@ export async function POST(request: Request) {
   // Find email + name from field values
   const { data: fields } = await supabase
     .from('registration_fields')
-    .select('id, label, field_type')
+    .select('id, label, field_type, sort_order')
     .eq('event_id', eventId)
 
   const emailField = fields?.find((f) =>
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
         f.label.toLowerCase().includes(kw)
       )
     )
-    .sort((a, b) => a.label.localeCompare(b.label))
+    .sort((a, b) => a.sort_order - b.sort_order)
 
   const emailValue = emailField ? (fieldValues as Record<string, string>)[emailField.id] : null
   const participantName =
