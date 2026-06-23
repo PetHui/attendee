@@ -107,12 +107,12 @@ export default async function SuperadminPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <Link
+                    <a
                       href={`/api/superadmin/impersonate?orgId=${org.id}`}
                       className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
                     >
                       Hantera →
-                    </Link>
+                    </a>
                   </td>
                 </tr>
               ))}
