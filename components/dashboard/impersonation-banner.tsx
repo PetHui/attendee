@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { createServiceClient } from '@/lib/supabase/server'
 
 export default async function ImpersonationBanner({ orgId }: { orgId: string }) {
@@ -15,12 +14,12 @@ export default async function ImpersonationBanner({ orgId }: { orgId: string }) 
         <span className="font-medium">Superadmin</span> — du hanterar{' '}
         <span className="font-semibold">{org?.name}</span>
       </p>
-      <Link
+      <a
         href="/api/superadmin/impersonate/clear"
         className="text-sm font-medium text-amber-700 hover:text-amber-900 underline"
       >
         Avsluta
-      </Link>
+      </a>
     </div>
   )
 }
