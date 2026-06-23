@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
-import { sendConfirmationEmail } from '@/lib/email'
+import { sendConfirmationEmail, sendConfirmationEmailWithCatalog } from '@/lib/email'
 
 export async function POST(request: Request) {
   const { eventId, fieldValues } = await request.json()
@@ -91,19 +91,52 @@ export async function POST(request: Request) {
           .join(' ')
       : 'Deltagare'
 
+  // Check if event has exhibitors (to include catalog link)
+  const { count: exhibitorCount } = await supabase
+    .from('exhibitors')
+    .select('*', { count: 'exact', head: true })
+    .eq('event_id', eventId)
+    .eq('status', 'published')
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const { data: org } = await supabase
+    .from('organizations')
+    .select('slug')
+    .eq('id', event.organization_id)
+    .single()
+
+  const catalogUrl =
+    (exhibitorCount ?? 0) > 0 && org?.slug
+      ? `${appUrl}/${org.slug}/${eventId}/catalog?token=${participant.qr_code}`
+      : undefined
+
   // Send confirmation email (non-blocking fail)
   if (emailValue) {
     try {
-      await sendConfirmationEmail({
-        to: emailValue,
-        participantName,
-        eventTitle: event.title,
-        eventDescription: event.description,
-        eventLocation: event.location,
-        eventStartsAt: event.starts_at,
-        eventEndsAt: event.ends_at,
-        qrCode: participant.qr_code,
-      })
+      if (catalogUrl) {
+        await sendConfirmationEmailWithCatalog({
+          to: emailValue,
+          participantName,
+          eventTitle: event.title,
+          eventDescription: event.description,
+          eventLocation: event.location,
+          eventStartsAt: event.starts_at,
+          eventEndsAt: event.ends_at,
+          qrCode: participant.qr_code,
+          catalogUrl,
+        })
+      } else {
+        await sendConfirmationEmail({
+          to: emailValue,
+          participantName,
+          eventTitle: event.title,
+          eventDescription: event.description,
+          eventLocation: event.location,
+          eventStartsAt: event.starts_at,
+          eventEndsAt: event.ends_at,
+          qrCode: participant.qr_code,
+        })
+      }
     } catch (err) {
       console.error('[email] Failed to send confirmation:', err)
     }

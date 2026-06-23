@@ -66,3 +66,56 @@ export interface ParticipantFieldValue {
 export interface ParticipantWithValues extends Participant {
   field_values: (ParticipantFieldValue & { field?: RegistrationField })[]
 }
+
+export type ExhibitorStatus = 'draft' | 'published'
+
+export interface Exhibitor {
+  id: string
+  event_id: string
+  company_name: string
+  description: string | null
+  website: string | null
+  email: string | null
+  phone: string | null
+  booth_number: string | null
+  status: ExhibitorStatus
+  edit_token: string
+  sort_order: number
+  created_at: string
+}
+
+export interface ExhibitorContact {
+  id: string
+  exhibitor_id: string
+  name: string
+  email: string | null
+  phone: string | null
+  role: string | null
+  is_primary: boolean
+}
+
+export interface ExhibitorBilling {
+  id: string
+  exhibitor_id: string
+  company_name: string | null
+  org_number: string | null
+  vat_number: string | null
+  billing_address: string | null
+  billing_email: string | null
+  billing_reference: string | null
+}
+
+export interface ExhibitorOffer {
+  id: string
+  exhibitor_id: string
+  title: string
+  description: string | null
+  created_at: string
+}
+
+export interface OfferRedemption {
+  id: string
+  offer_id: string
+  participant_id: string
+  redeemed_at: string
+}

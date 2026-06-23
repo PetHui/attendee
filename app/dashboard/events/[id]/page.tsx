@@ -62,7 +62,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-4 gap-3 mb-4">
         <Link
           href={`/dashboard/events/${event.id}/fields`}
           className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
@@ -83,6 +83,13 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
         >
           <p className="text-2xl mb-1">📱</p>
           <p className="text-sm font-medium text-gray-700">Incheckning</p>
+        </Link>
+        <Link
+          href={`/dashboard/events/${event.id}/exhibitors`}
+          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
+        >
+          <p className="text-2xl mb-1">🏢</p>
+          <p className="text-sm font-medium text-gray-700">Utställare</p>
         </Link>
       </div>
 
