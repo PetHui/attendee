@@ -35,13 +35,38 @@ export default async function ExhibitorPortalPage({
       .eq('exhibitor_id', exhibitor.id),
   ])
 
+  // Fetch participant names for existing redemptions
+  const allRedemptions = (offers ?? []).flatMap((o: any) => o.redemptions ?? [])
+  const participantIds = [...new Set(allRedemptions.map((r: any) => r.participant_id as string))]
+  const nameMap: Record<string, string> = {}
+  if (participantIds.length > 0) {
+    const { data: fieldValues } = await serviceClient
+      .from('participant_field_values')
+      .select('participant_id, value, registration_fields(label)')
+      .in('participant_id', participantIds)
+    for (const fv of fieldValues ?? []) {
+      const label = (fv as any).registration_fields?.label?.toLowerCase() ?? ''
+      if (['förnamn', 'efternamn', 'namn', 'name'].some((kw) => label.includes(kw))) {
+        if (!nameMap[fv.participant_id]) nameMap[fv.participant_id] = fv.value
+      }
+    }
+  }
+
+  const enrichedOffers = (offers ?? []).map((o: any) => ({
+    ...o,
+    redemptions: (o.redemptions ?? []).map((r: any) => ({
+      ...r,
+      name: nameMap[r.participant_id] ?? undefined,
+    })),
+  }))
+
   return (
     <ExhibitorPortal
       exhibitor={exhibitor}
       event={(exhibitor as any).event}
       contacts={contacts ?? []}
       billing={billing ?? null}
-      offers={offers ?? []}
+      offers={enrichedOffers}
       editToken={token}
     />
   )

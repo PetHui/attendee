@@ -35,6 +35,7 @@ interface Redemption {
   id: string
   participant_id: string
   redeemed_at: string
+  name?: string
 }
 
 interface Offer {
@@ -121,6 +122,24 @@ export default function ExhibitorPortal({
   const [isScanning, setIsScanning] = useState(false)
   const [showScanner, setShowScanner] = useState(true)
 
+  function exportCSV() {
+    const rows = [['Namn', 'Tid']]
+    for (const r of redemptions) {
+      rows.push([
+        r.name ?? r.participant_id.slice(0, 8) + '…',
+        new Date(r.redeemed_at).toLocaleString('sv-SE', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+      ])
+    }
+    const csv = rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `besokare-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   function flash() {
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
@@ -206,7 +225,7 @@ export default function ExhibitorPortal({
           setScanResult(data)
           if (!data.alreadyRedeemed) {
             setRedemptions((prev) => [
-              { id: data.redemptionId, participant_id: data.participantId, redeemed_at: new Date().toISOString() },
+              { id: data.redemptionId, participant_id: data.participantId, redeemed_at: new Date().toISOString(), name: data.name ?? undefined },
               ...prev,
             ])
           }
@@ -360,13 +379,21 @@ export default function ExhibitorPortal({
 
             {redemptions.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <p className="font-medium text-gray-900 mb-3">
-                  Inlösta erbjudanden <span className="text-indigo-600">({redemptions.length})</span>
-                </p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-medium text-gray-900">
+                    Inlösta erbjudanden <span className="text-indigo-600">({redemptions.length})</span>
+                  </p>
+                  <button
+                    onClick={exportCSV}
+                    className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                  >
+                    Exportera CSV
+                  </button>
+                </div>
                 <div className="space-y-2">
                   {redemptions.map((r) => (
                     <div key={r.id} className="flex justify-between text-sm text-gray-600 border-b border-gray-100 pb-2 last:border-0 last:pb-0">
-                      <span className="font-mono text-xs text-gray-400">{r.participant_id.slice(0, 12)}…</span>
+                      <span className="text-xs text-gray-700">{r.name ?? `${r.participant_id.slice(0, 12)}…`}</span>
                       <span className="text-xs text-gray-400">
                         {new Date(r.redeemed_at).toLocaleString('sv-SE', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}
                       </span>
@@ -500,16 +527,26 @@ export default function ExhibitorPortal({
                 </div>
 
                 <div className="bg-white rounded-xl border border-gray-200 p-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">
-                    Inlösta idag <span className="text-indigo-600">({redemptions.length})</span>
-                  </p>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium text-gray-700">
+                      Inlösta idag <span className="text-indigo-600">({redemptions.length})</span>
+                    </p>
+                    {redemptions.length > 0 && (
+                      <button
+                        onClick={exportCSV}
+                        className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                      >
+                        Exportera CSV
+                      </button>
+                    )}
+                  </div>
                   {redemptions.length === 0 ? (
                     <p className="text-sm text-gray-400">Inga inlösta erbjudanden än.</p>
                   ) : (
                     <div className="space-y-1">
                       {redemptions.slice(0, 10).map((r) => (
                         <div key={r.id} className="flex justify-between text-xs text-gray-500">
-                          <span className="font-mono">{r.participant_id.slice(0, 8)}…</span>
+                          <span>{r.name ?? `${r.participant_id.slice(0, 8)}…`}</span>
                           <span>{new Date(r.redeemed_at).toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                       ))}
