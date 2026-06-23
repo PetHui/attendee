@@ -138,16 +138,8 @@ export default function ExhibitorCatalog({
                       href={detailUrl}
                       className={`flex items-center px-4 py-3.5 hover:bg-gray-50 transition-colors ${i > 0 ? 'border-t border-gray-100' : ''}`}
                     >
-                      {/* Avatar */}
-                      <div
-                        style={hasOffer ? { background: brand } : undefined}
-                        className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${hasOffer ? 'text-white' : 'bg-gray-100 text-gray-500'}`}
-                      >
-                        {ex.company_name.slice(0, 2).toUpperCase()}
-                      </div>
-
                       {/* Namn + monter */}
-                      <div className="ml-3 flex-1 min-w-0">
+                      <div className="flex-1 min-w-0">
                         <span className="text-sm font-semibold text-gray-900">{ex.company_name}</span>
                         {ex.booth_number && (
                           <span className="text-xs text-gray-400 ml-2">Monter {ex.booth_number}</span>
