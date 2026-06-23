@@ -66,12 +66,12 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900">Mina event</h1>
           <p className="text-gray-500 mt-1">Hantera event och deltagarregistreringar</p>
         </div>
-        <Link
+        <a
           href="/dashboard/events/new"
           className="bg-brand text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
         >
           + Skapa event
-        </Link>
+        </a>
       </div>
 
       {!events?.length ? (
@@ -79,12 +79,12 @@ export default async function DashboardPage() {
           <p className="text-5xl mb-4">📅</p>
           <h2 className="text-lg font-semibold text-gray-700 mb-2">Inga event ännu</h2>
           <p className="text-gray-500 mb-6">Skapa ditt första event för att komma igång</p>
-          <Link
+          <a
             href="/dashboard/events/new"
             className="bg-brand text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
           >
             Skapa event
-          </Link>
+          </a>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">

@@ -24,8 +24,7 @@ export default async function NewEventPage() {
   let organizationId = userData.organization_id
   if (userData.role === 'superadmin') {
     const impersonatedId = await getImpersonatedOrgId()
-    if (!impersonatedId) redirect('/superadmin')
-    organizationId = impersonatedId
+    if (impersonatedId) organizationId = impersonatedId
   }
 
   return (
