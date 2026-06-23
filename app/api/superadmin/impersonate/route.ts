@@ -45,8 +45,7 @@ export async function GET(request: Request) {
     httpOnly: true,
     path: '/',
     sameSite: 'lax',
-    maxAge: 60 * 60 * 8, // 8 timmar
+    maxAge: 60 * 60 * 8,
   })
-
   return response
 }

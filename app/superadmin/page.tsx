@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import ImpersonateButton from './impersonate-button'
 
 export default async function SuperadminPage() {
   const supabase = createServiceClient()
@@ -107,12 +108,7 @@ export default async function SuperadminPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <a
-                      href={`/api/superadmin/impersonate?orgId=${org.id}`}
-                      className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
-                    >
-                      Hantera →
-                    </a>
+                    <ImpersonateButton orgId={org.id} />
                   </td>
                 </tr>
               ))}
