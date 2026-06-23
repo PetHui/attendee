@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 interface Offer {
   id: string
   title: string
@@ -47,6 +49,13 @@ export default function ExhibitorCatalog({
   token?: string
 }) {
   const brand = org.primary_color ?? '#6366f1'
+  const [query, setQuery] = useState('')
+  const filtered = query.trim()
+    ? exhibitors.filter((e) =>
+        e.company_name.toLowerCase().includes(query.toLowerCase()) ||
+        e.booth_number?.toLowerCase().includes(query.toLowerCase())
+      )
+    : exhibitors
   const withOffers = exhibitors.filter((e) => e.exhibitor_offers.length > 0)
 
   return (
@@ -122,14 +131,33 @@ export default function ExhibitorCatalog({
               )}
             </div>
 
-            {exhibitors.length === 0 ? (
+            {/* Sökfält */}
+            <div className="relative mb-4">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+              </svg>
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Sök utställare eller monternummer..."
+                className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+              />
+            </div>
+
+            {filtered.length === 0 ? (
+              <div className="text-center py-12 text-gray-400">
+                <p className="text-3xl mb-3">🔍</p>
+                <p>Inga utställare matchar "{query}".</p>
+              </div>
+            ) : exhibitors.length === 0 ? (
               <div className="text-center py-12 text-gray-400">
                 <p className="text-4xl mb-3">🏢</p>
                 <p>Inga utställare publicerade ännu.</p>
               </div>
             ) : (
               <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-                {exhibitors.map((ex, i) => {
+                {filtered.map((ex, i) => {
                   const hasOffer = ex.exhibitor_offers.length > 0
                   const detailUrl = `/${org.slug}/${event.id}/catalog/${ex.id}${token ? `?token=${token}` : ''}`
                   return (
