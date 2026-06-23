@@ -17,7 +17,7 @@ export default async function CatalogPage({
   // Verify org and event
   const { data: org } = await serviceClient
     .from('organizations')
-    .select('id, name, primary_color')
+    .select('id, name, slug, primary_color')
     .eq('slug', orgSlug)
     .single()
 
@@ -62,6 +62,7 @@ export default async function CatalogPage({
       exhibitors={exhibitors ?? []}
       isUnlocked={isUnlocked}
       registrationUrl={registrationUrl}
+      token={token}
     />
   )
 }
