@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getImpersonatedOrgId } from '@/lib/impersonation'
 import EventForm from '@/components/dashboard/event-form'
 import Link from 'next/link'
 
@@ -16,8 +17,15 @@ export default async function NewEventPage() {
     .eq('id', user.id)
     .single()
 
-  if (!userData || !['owner', 'admin'].includes(userData.role)) {
+  if (!userData || !['owner', 'admin', 'superadmin'].includes(userData.role)) {
     redirect('/dashboard')
+  }
+
+  let organizationId = userData.organization_id
+  if (userData.role === 'superadmin') {
+    const impersonatedId = await getImpersonatedOrgId()
+    if (!impersonatedId) redirect('/superadmin')
+    organizationId = impersonatedId
   }
 
   return (
@@ -33,7 +41,7 @@ export default async function NewEventPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <EventForm organizationId={userData.organization_id} />
+        <EventForm organizationId={organizationId} />
       </div>
     </div>
   )
