@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServiceClient } from '@/lib/supabase/server'
 import DeleteUserButton from './delete-user-button'
+import OrgNameForm from './org-name-form'
 
 const ROLE_LABELS: Record<string, string> = {
   superadmin: 'Superadmin',
@@ -49,6 +50,8 @@ export default async function OrganizationDetailPage({
           </span>
         </div>
       </div>
+
+      <OrgNameForm orgId={org.id} initialName={org.name} />
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
