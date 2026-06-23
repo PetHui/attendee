@@ -22,14 +22,21 @@ function isValidHex(value: string) {
 export default function SettingsForm({
   orgId,
   initialColor,
+  initialName,
+  isSuperadmin,
 }: {
   orgId: string
   initialColor: string
+  initialName: string
+  isSuperadmin: boolean
 }) {
   const [color, setColor] = useState(initialColor)
   const [hexInput, setHexInput] = useState(initialColor)
+  const [name, setName] = useState(initialName)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [nameSaving, setNameSaving] = useState(false)
+  const [nameSaved, setNameSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   function handlePickerChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -80,9 +87,57 @@ export default function SettingsForm({
     }
   }
 
+  async function handleSaveName() {
+    if (!name.trim()) return
+    setNameSaving(true)
+    try {
+      const res = await fetch('/api/organizations/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), orgId }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error ?? 'Något gick fel.')
+        return
+      }
+      setNameSaved(true)
+      setTimeout(() => setNameSaved(false), 3000)
+    } finally {
+      setNameSaving(false)
+    }
+  }
+
   return (
     <div className="p-8 max-w-lg">
       <h1 className="text-2xl font-bold text-gray-900 mb-8">Inställningar</h1>
+
+      {isSuperadmin && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4">
+          <h2 className="text-base font-semibold text-gray-900 mb-1">Organisationsnamn</h2>
+          <p className="text-sm text-gray-500 mb-4">
+            Endast superadmin kan ändra organisationsnamnet.
+          </p>
+          <div className="flex gap-3 items-center">
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => { setName(e.target.value); setNameSaved(false) }}
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <button
+              onClick={handleSaveName}
+              disabled={nameSaving || !name.trim()}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+            >
+              {nameSaving ? 'Sparar...' : 'Spara'}
+            </button>
+          </div>
+          {nameSaved && (
+            <p className="text-sm text-green-600 mt-2">Namnet sparades.</p>
+          )}
+        </div>
+      )}
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
         <div>

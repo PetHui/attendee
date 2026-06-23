@@ -23,7 +23,7 @@ export default async function SettingsPage() {
   const dataClient = isSuperadmin ? createServiceClient() : supabase
   const { data: org } = await dataClient
     .from('organizations')
-    .select('primary_color')
+    .select('name, primary_color')
     .eq('id', orgId)
     .single()
 
@@ -31,6 +31,8 @@ export default async function SettingsPage() {
     <SettingsForm
       orgId={orgId}
       initialColor={org?.primary_color ?? '#6366f1'}
+      initialName={org?.name ?? ''}
+      isSuperadmin={isSuperadmin}
     />
   )
 }
