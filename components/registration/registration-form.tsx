@@ -59,8 +59,7 @@ export default function RegistrationForm({
         <div className="text-6xl mb-4">🎉</div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">Anmälan mottagen!</h2>
         <p className="text-gray-600 leading-relaxed">
-          Du är nu anmäld. En bekräftelse med din personliga QR-kod för incheckning skickas till
-          din e-post.
+          Du är nu anmäld. En bekräftelse med din personliga QR-kod har skickats till din e-post.
         </p>
         <p className="text-gray-400 text-sm mt-3">
           Kontrollera skräpposten om mailet inte dyker upp inom någon minut.
