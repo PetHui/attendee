@@ -24,6 +24,7 @@ export async function sendConfirmationEmail({
   eventStartsAt,
   eventEndsAt,
   qrCode,
+  brandColor = '#6366f1',
 }: {
   to: string
   participantName: string
@@ -33,6 +34,7 @@ export async function sendConfirmationEmail({
   eventStartsAt: string | null
   eventEndsAt: string | null
   qrCode: string
+  brandColor?: string
 }) {
   const qrBuffer = await QRCode.toBuffer(qrCode, {
     width: 300,
@@ -54,9 +56,9 @@ export async function sendConfirmationEmail({
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
           <tr>
-            <td style="background:#4f46e5;border-radius:12px 12px 0 0;padding:32px;text-align:center;">
+            <td style="background:${brandColor};border-radius:12px 12px 0 0;padding:32px;text-align:center;">
               <h1 style="color:#ffffff;margin:0;font-size:28px;font-weight:700;">Attendee</h1>
-              <p style="color:#c7d2fe;margin:8px 0 0;font-size:14px;">Anmälningsbekräftelse</p>
+              <p style="color:rgba(255,255,255,0.75);margin:8px 0 0;font-size:14px;">Anmälningsbekräftelse</p>
             </td>
           </tr>
           <tr>
@@ -67,7 +69,7 @@ export async function sendConfirmationEmail({
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:28px;">
                 <tr>
                   <td style="padding:20px;">
-                    <h2 style="color:#4f46e5;font-size:20px;margin:0 0 14px;">${eventTitle}</h2>
+                    <h2 style="color:${brandColor};font-size:20px;margin:0 0 14px;">${eventTitle}</h2>
                     ${eventDescription ? `<p style="color:#6b7280;font-size:14px;margin:0 0 14px;line-height:1.6;">${eventDescription}</p>` : ''}
                     ${eventLocation ? `<p style="font-size:14px;color:#374151;margin:0 0 8px;"><strong>Plats:</strong> ${eventLocation}</p>` : ''}
                     ${eventStartsAt ? `<p style="font-size:14px;color:#374151;margin:0 0 8px;"><strong>Startar:</strong> ${formatSwedishDate(eventStartsAt)}</p>` : ''}
@@ -154,9 +156,9 @@ export async function sendConfirmationEmailWithCatalog({
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
           <tr>
-            <td style="background:#4f46e5;border-radius:12px 12px 0 0;padding:32px;text-align:center;">
+            <td style="background:${rest.brandColor ?? '#6366f1'};border-radius:12px 12px 0 0;padding:32px;text-align:center;">
               <h1 style="color:#ffffff;margin:0;font-size:28px;font-weight:700;">Attendee</h1>
-              <p style="color:#c7d2fe;margin:8px 0 0;font-size:14px;">Anmälningsbekräftelse</p>
+              <p style="color:rgba(255,255,255,0.75);margin:8px 0 0;font-size:14px;">Anmälningsbekräftelse</p>
             </td>
           </tr>
           <tr>
@@ -167,7 +169,7 @@ export async function sendConfirmationEmailWithCatalog({
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:28px;">
                 <tr>
                   <td style="padding:20px;">
-                    <h2 style="color:#4f46e5;font-size:20px;margin:0 0 14px;">${rest.eventTitle}</h2>
+                    <h2 style="color:${rest.brandColor ?? '#6366f1'};font-size:20px;margin:0 0 14px;">${rest.eventTitle}</h2>
                     ${rest.eventDescription ? `<p style="color:#6b7280;font-size:14px;margin:0 0 14px;line-height:1.6;">${rest.eventDescription}</p>` : ''}
                     ${rest.eventLocation ? `<p style="font-size:14px;color:#374151;margin:0 0 8px;"><strong>Plats:</strong> ${rest.eventLocation}</p>` : ''}
                     ${rest.eventStartsAt ? `<p style="font-size:14px;color:#374151;margin:0 0 8px;"><strong>Startar:</strong> ${formatSwedishDate(rest.eventStartsAt)}</p>` : ''}

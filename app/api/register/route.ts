@@ -101,7 +101,7 @@ export async function POST(request: Request) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   const { data: org } = await supabase
     .from('organizations')
-    .select('slug')
+    .select('slug, primary_color')
     .eq('id', event.organization_id)
     .single()
 
@@ -109,6 +109,8 @@ export async function POST(request: Request) {
     (exhibitorCount ?? 0) > 0 && org?.slug
       ? `${appUrl}/${org.slug}/${eventId}/catalog?token=${participant.qr_code}`
       : undefined
+
+  const brandColor = event.primary_color ?? org?.primary_color ?? '#6366f1'
 
   // Send confirmation email (non-blocking fail)
   if (emailValue) {
@@ -124,6 +126,7 @@ export async function POST(request: Request) {
           eventEndsAt: event.ends_at,
           qrCode: participant.qr_code,
           catalogUrl,
+          brandColor,
         })
       } else {
         await sendConfirmationEmail({
@@ -135,6 +138,7 @@ export async function POST(request: Request) {
           eventStartsAt: event.starts_at,
           eventEndsAt: event.ends_at,
           qrCode: participant.qr_code,
+          brandColor,
         })
       }
     } catch (err) {
