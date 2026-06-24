@@ -33,13 +33,22 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
   if (!event) notFound()
 
   let orgSlug = (userData?.organization as any)?.slug ?? ''
+  let orgColor: string | null = null
   if (impersonatedOrgId) {
     const { data: impOrg } = await dataClient
       .from('organizations')
-      .select('slug')
+      .select('slug, primary_color')
       .eq('id', impersonatedOrgId)
       .single()
     orgSlug = impOrg?.slug ?? ''
+    orgColor = impOrg?.primary_color ?? null
+  } else {
+    const { data: org } = await dataClient
+      .from('organizations')
+      .select('primary_color')
+      .eq('id', effectiveOrgId)
+      .single()
+    orgColor = org?.primary_color ?? null
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
@@ -58,7 +67,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4">
-        <EventForm event={event} organizationId={effectiveOrgId ?? ''} />
+        <EventForm event={event} organizationId={effectiveOrgId ?? ''} orgColor={orgColor} />
       </div>
 
       {/* Quick links */}

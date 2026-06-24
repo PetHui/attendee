@@ -51,7 +51,7 @@ export default async function RegistrationPage({
     event.registration_deadline != null &&
     new Date(event.registration_deadline) < new Date()
 
-  const brand = org.primary_color ?? '#6366f1'
+  const brand = event.primary_color ?? org.primary_color ?? '#6366f1'
 
   return (
     <div

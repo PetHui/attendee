@@ -27,6 +27,12 @@ export default async function NewEventPage() {
     if (impersonatedId) organizationId = impersonatedId
   }
 
+  const { data: org } = await supabase
+    .from('organizations')
+    .select('primary_color')
+    .eq('id', organizationId)
+    .single()
+
   return (
     <div className="p-8 max-w-2xl">
       <div className="mb-6">
@@ -40,7 +46,7 @@ export default async function NewEventPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <EventForm organizationId={organizationId} />
+        <EventForm organizationId={organizationId} orgColor={org?.primary_color ?? null} />
       </div>
     </div>
   )

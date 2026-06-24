@@ -4,12 +4,30 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Event } from '@/types'
 
+const PRESETS = [
+  '#6366f1',
+  '#8b5cf6',
+  '#ec4899',
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#14b8a6',
+  '#0ea5e9',
+  '#64748b',
+]
+
+function isValidHex(value: string) {
+  return /^#[0-9a-fA-F]{6}$/.test(value)
+}
+
 interface EventFormProps {
   event?: Event
   organizationId: string
+  orgColor?: string | null
 }
 
-export default function EventForm({ event, organizationId }: EventFormProps) {
+export default function EventForm({ event, organizationId, orgColor }: EventFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -31,10 +49,30 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
     status: event?.status ?? 'draft',
   })
 
+  const [useCustomColor, setUseCustomColor] = useState(!!event?.primary_color)
+  const [color, setColor] = useState(event?.primary_color ?? orgColor ?? '#6366f1')
+  const [hexInput, setHexInput] = useState(event?.primary_color ?? orgColor ?? '#6366f1')
+
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  function handlePickerChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setColor(e.target.value)
+    setHexInput(e.target.value)
+  }
+
+  function handleHexChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value
+    setHexInput(val)
+    if (isValidHex(val)) setColor(val)
+  }
+
+  function handlePreset(preset: string) {
+    setColor(preset)
+    setHexInput(preset)
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -49,6 +87,7 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
       ends_at: form.ends_at || null,
       max_participants: form.max_participants ? parseInt(form.max_participants) : null,
       registration_deadline: form.registration_deadline || null,
+      primary_color: useCustomColor && isValidHex(color) ? color : null,
     }
 
     const url = event ? `/api/events/${event.id}` : '/api/events'
@@ -70,6 +109,8 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
     router.push('/dashboard')
     router.refresh()
   }
+
+  const previewColor = useCustomColor && isValidHex(color) ? color : (orgColor ?? '#6366f1')
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -179,6 +220,77 @@ export default function EventForm({ event, organizationId }: EventFormProps) {
             <option value="archived">Arkiverat</option>
           </select>
         </div>
+      </div>
+
+      {/* Event color */}
+      <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-700">Eventfärg</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {useCustomColor ? 'Anpassad färg för detta event' : 'Använder organisationens standardfärg'}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div
+              className="w-6 h-6 rounded-full border border-gray-200"
+              style={{ backgroundColor: previewColor }}
+            />
+            <button
+              type="button"
+              onClick={() => setUseCustomColor((v) => !v)}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                useCustomColor ? 'bg-indigo-600' : 'bg-gray-200'
+              }`}
+            >
+              <span
+                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                  useCustomColor ? 'translate-x-4' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
+        {useCustomColor && (
+          <div className="space-y-3 pt-1">
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={isValidHex(color) ? color : '#6366f1'}
+                onChange={handlePickerChange}
+                className="w-10 h-9 rounded-lg border border-gray-300 cursor-pointer p-0.5 bg-white"
+              />
+              <input
+                type="text"
+                value={hexInput}
+                onChange={handleHexChange}
+                maxLength={7}
+                placeholder="#6366f1"
+                className="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <div
+                className="flex-1 h-9 rounded-lg border border-gray-200 transition-colors"
+                style={{ backgroundColor: isValidHex(hexInput) ? hexInput : color }}
+              />
+            </div>
+            <div className="flex gap-1.5 flex-wrap">
+              {PRESETS.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => handlePreset(preset)}
+                  title={preset}
+                  className="w-6 h-6 rounded-full border-2 transition-transform hover:scale-110"
+                  style={{
+                    backgroundColor: preset,
+                    borderColor: color === preset ? '#1f2937' : 'transparent',
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-3 pt-2">
