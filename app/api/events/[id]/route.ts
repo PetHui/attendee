@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getImpersonatedOrgId } from '@/lib/impersonation'
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -9,15 +10,38 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Ej autentiserad' }, { status: 401 })
 
+  const { data: userData } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
   const body = await request.json()
   const { organization_id: _orgId, ...updateData } = body
 
-  const { data, error } = await supabase
-    .from('events')
-    .update(updateData)
-    .eq('id', id)
-    .select()
-    .single()
+  let data, error
+
+  if (userData?.role === 'superadmin') {
+    const impersonatedOrgId = await getImpersonatedOrgId()
+    if (!impersonatedOrgId) {
+      return NextResponse.json({ error: 'Ingen impersonerad organisation' }, { status: 403 })
+    }
+    const serviceSupabase = createServiceClient()
+    ;({ data, error } = await serviceSupabase
+      .from('events')
+      .update(updateData)
+      .eq('id', id)
+      .eq('organization_id', impersonatedOrgId)
+      .select()
+      .single())
+  } else {
+    ;({ data, error } = await supabase
+      .from('events')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single())
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
