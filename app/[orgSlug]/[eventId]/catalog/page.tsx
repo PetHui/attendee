@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import QRCode from 'qrcode'
 import { createServiceClient } from '@/lib/supabase/server'
 import ExhibitorCatalog from '@/components/catalog/exhibitor-catalog'
 
@@ -34,6 +35,7 @@ export default async function CatalogPage({
 
   // Validate token (participant's QR code in this event)
   let isUnlocked = false
+  let qrCodeBase64: string | undefined
   if (token) {
     const { data: participant } = await serviceClient
       .from('participants')
@@ -42,6 +44,10 @@ export default async function CatalogPage({
       .eq('event_id', eventId)
       .maybeSingle()
     isUnlocked = !!participant
+    if (isUnlocked) {
+      const buf = await QRCode.toBuffer(token, { width: 300, margin: 2 })
+      qrCodeBase64 = `data:image/png;base64,${buf.toString('base64')}`
+    }
   }
 
   // Load published exhibitors (always, so teaser can show count)
@@ -63,6 +69,7 @@ export default async function CatalogPage({
       isUnlocked={isUnlocked}
       registrationUrl={registrationUrl}
       token={token}
+      qrCodeBase64={qrCodeBase64}
     />
   )
 }

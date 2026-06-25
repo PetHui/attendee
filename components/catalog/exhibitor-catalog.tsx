@@ -40,6 +40,7 @@ export default function ExhibitorCatalog({
   isUnlocked,
   registrationUrl,
   token,
+  qrCodeBase64,
 }: {
   event: Event
   org: Org
@@ -47,9 +48,11 @@ export default function ExhibitorCatalog({
   isUnlocked: boolean
   registrationUrl: string
   token?: string
+  qrCodeBase64?: string
 }) {
   const brand = org.primary_color ?? '#6366f1'
   const [query, setQuery] = useState('')
+  const [qrOpen, setQrOpen] = useState(false)
   const filtered = query.trim()
     ? exhibitors.filter((e) =>
         e.company_name.toLowerCase().includes(query.toLowerCase()) ||
@@ -68,6 +71,30 @@ export default function ExhibitorCatalog({
           <p className="text-white/80 text-sm mt-1">Utställarkatalog</p>
           {event.location && (
             <p className="text-white/60 text-xs mt-2">{event.location}</p>
+          )}
+
+          {qrCodeBase64 && (
+            <div className="mt-4">
+              <button
+                onClick={() => setQrOpen((v) => !v)}
+                className="flex items-center gap-2 bg-white/20 hover:bg-white/30 transition-colors text-white text-sm font-medium px-4 py-2 rounded-xl"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m0 14v1m8-8h-1M5 12H4m13.657-6.343-.707.707M6.343 17.657l-.707.707m11.314 0-.707-.707M6.343 6.343l-.707-.707" />
+                  <rect x="3" y="3" width="7" height="7" rx="1" strokeWidth={2} />
+                  <rect x="14" y="3" width="7" height="7" rx="1" strokeWidth={2} />
+                  <rect x="3" y="14" width="7" height="7" rx="1" strokeWidth={2} />
+                </svg>
+                {qrOpen ? 'Dölj min QR-kod' : 'Visa min QR-kod'}
+              </button>
+
+              {qrOpen && (
+                <div className="mt-3 bg-white rounded-2xl p-4 inline-block shadow-lg">
+                  <img src={qrCodeBase64} alt="Din QR-kod" width={200} height={200} className="block" />
+                  <p className="text-xs text-gray-400 text-center mt-2">Visa vid incheckning</p>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
