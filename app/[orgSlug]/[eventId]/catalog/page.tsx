@@ -50,10 +50,15 @@ export default async function CatalogPage({
       qrCodeBase64 = `data:image/png;base64,${buf.toString('base64')}`
 
       const nameKeywords = ['förnamn', 'efternamn', 'namn', 'name']
-      const nameValues = (participant.participant_field_values as Array<{ value: string; registration_fields: { label: string; sort_order: number } | null }>)
-        .filter((fv) => fv.registration_fields && nameKeywords.some((kw) => fv.registration_fields!.label.toLowerCase().includes(kw)))
-        .sort((a, b) => (a.registration_fields!.sort_order ?? 0) - (b.registration_fields!.sort_order ?? 0))
-        .map((fv) => fv.value)
+      type FieldValue = { value: string; registration_fields: { label: string; sort_order: number } | { label: string; sort_order: number }[] | null }
+      const nameValues = (participant.participant_field_values as unknown as FieldValue[])
+        .map((fv) => {
+          const rf = Array.isArray(fv.registration_fields) ? fv.registration_fields[0] : fv.registration_fields
+          return { value: fv.value, rf }
+        })
+        .filter(({ rf }) => rf && nameKeywords.some((kw) => rf.label.toLowerCase().includes(kw)))
+        .sort((a, b) => (a.rf!.sort_order ?? 0) - (b.rf!.sort_order ?? 0))
+        .map(({ value }) => value)
         .filter(Boolean)
       participantName = nameValues.length ? nameValues.join(' ') : undefined
     }
