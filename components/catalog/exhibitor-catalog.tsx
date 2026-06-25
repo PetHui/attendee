@@ -116,9 +116,7 @@ function MapView({
                 backgroundColor: e.map_color ?? DEFAULT_BOOTH_COLOR,
                 borderColor: isHighlighted ? brand : isHovered ? brand : 'rgba(0,0,0,0.15)',
                 zIndex: isHighlighted ? 5 : isHovered ? 10 : 1,
-                boxShadow: isHighlighted
-                  ? `0 0 8px 2px ${brand}60`
-                  : undefined,
+                boxShadow: undefined,
                 transform: isHovered ? 'scale(1.03)' : undefined,
               }}
             >
