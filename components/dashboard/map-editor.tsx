@@ -675,23 +675,29 @@ export default function MapEditor({
 
           <div>
             <label className="block text-xs text-gray-500 mb-1">Ram</label>
-            <div className="flex gap-2 items-center">
-              <input
-                type="color"
-                value={selectedElement.border_color ?? '#374151'}
-                onChange={(e) => updateElement(selectedElement.id, { border_color: e.target.value })}
-                className="h-8 flex-1 rounded border border-gray-300 cursor-pointer"
-              />
-              {selectedElement.border_color ? (
-                <button onClick={() => updateElement(selectedElement.id, { border_color: null })} className="text-xs text-gray-400 hover:text-gray-600 whitespace-nowrap">
-                  Ingen
+            {selectedElement.border_color ? (
+              <div className="flex gap-2 items-center">
+                <input
+                  type="color"
+                  value={selectedElement.border_color}
+                  onChange={(e) => updateElement(selectedElement.id, { border_color: e.target.value })}
+                  className="h-8 flex-1 rounded border border-gray-300 cursor-pointer"
+                />
+                <button
+                  onClick={() => updateElement(selectedElement.id, { border_color: null })}
+                  className="text-xs text-gray-400 hover:text-gray-600 whitespace-nowrap"
+                >
+                  Ta bort
                 </button>
-              ) : (
-                <button onClick={() => updateElement(selectedElement.id, { border_color: '#374151' })} className="text-xs text-brand hover:opacity-70 whitespace-nowrap">
-                  Lägg till
-                </button>
-              )}
-            </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => updateElement(selectedElement.id, { border_color: '#374151' })}
+                className="w-full text-xs border border-gray-300 rounded px-3 py-1.5 hover:border-brand hover:text-brand"
+              >
+                + Lägg till ram
+              </button>
+            )}
           </div>
 
           <div>
