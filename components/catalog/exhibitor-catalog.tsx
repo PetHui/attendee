@@ -38,10 +38,32 @@ interface Org {
   primary_color: string | null
 }
 
+interface MapElement {
+  id: string
+  label: string
+  x: number
+  y: number
+  w: number
+  h: number
+  font_size: string
+  text_color: string
+  bg_color: string | null
+  bold: boolean
+}
+
 const DEFAULT_BOOTH_COLOR = '#bfdbfe'
+
+const FONT_SIZE_CLASSES: Record<string, string> = {
+  xs: 'text-[10px]',
+  sm: 'text-xs',
+  md: 'text-sm',
+  lg: 'text-base',
+  xl: 'text-xl',
+}
 
 function MapView({
   exhibitors,
+  mapElements,
   mapImageUrl,
   mapAspectRatio,
   org,
@@ -50,6 +72,7 @@ function MapView({
   brand,
 }: {
   exhibitors: Exhibitor[]
+  mapElements: MapElement[]
   mapImageUrl: string
   mapAspectRatio: number
   org: Org
@@ -133,6 +156,27 @@ function MapView({
         </div>
       )}
 
+      {/* Textelement */}
+      {mapElements.map((el) => (
+        <div
+          key={el.id}
+          className={`absolute flex items-center justify-center pointer-events-none rounded ${el.bg_color ? 'px-2' : ''}`}
+          style={{
+            left: `${el.x}%`, top: `${el.y}%`,
+            width: `${el.w}%`, height: `${el.h}%`,
+            backgroundColor: el.bg_color ?? 'transparent',
+            zIndex: 2,
+          }}
+        >
+          <span
+            className={`${FONT_SIZE_CLASSES[el.font_size] ?? 'text-xs'} ${el.bold ? 'font-bold' : 'font-medium'} text-center leading-tight`}
+            style={{ color: el.text_color }}
+          >
+            {el.label}
+          </span>
+        </div>
+      ))}
+
       {placed.length === 0 && (
         <div className="text-center py-8 text-gray-400 text-sm">
           Inga montrar har placerats ut på kartan ännu.
@@ -153,6 +197,7 @@ export default function ExhibitorCatalog({
   participantName,
   mapImageUrl,
   mapAspectRatio,
+  mapElements,
 }: {
   event: Event
   org: Org
@@ -164,6 +209,7 @@ export default function ExhibitorCatalog({
   participantName?: string
   mapImageUrl: string | null
   mapAspectRatio: number
+  mapElements: MapElement[]
 }) {
   const brand = org.primary_color ?? '#6366f1'
   const [query, setQuery] = useState('')
@@ -303,6 +349,7 @@ export default function ExhibitorCatalog({
             {activeTab === 'karta' && hasMap ? (
               <MapView
                 exhibitors={exhibitors}
+                mapElements={mapElements}
                 mapImageUrl={mapImageUrl!}
                 mapAspectRatio={mapAspectRatio}
                 org={org}

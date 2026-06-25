@@ -31,7 +31,7 @@ export default async function MapPage({ params }: { params: Promise<{ id: string
 
   const serviceClient = createServiceClient()
 
-  const [{ data: exhibitors }, { data: presets }] = await Promise.all([
+  const [{ data: exhibitors }, { data: presets }, { data: elements }] = await Promise.all([
     serviceClient
       .from('exhibitors')
       .select('id, company_name, booth_number, map_x, map_y, map_w, map_h, map_color')
@@ -43,6 +43,11 @@ export default async function MapPage({ params }: { params: Promise<{ id: string
       .select('*')
       .eq('event_id', id)
       .order('sort_order'),
+    serviceClient
+      .from('map_elements')
+      .select('*')
+      .eq('event_id', id)
+      .order('created_at'),
   ])
 
   return (
@@ -64,6 +69,7 @@ export default async function MapPage({ params }: { params: Promise<{ id: string
           mapAspectRatio={event.map_aspect_ratio ?? 1.5}
           exhibitors={exhibitors ?? []}
           presets={presets ?? []}
+          initialElements={elements ?? []}
         />
       </div>
     </div>

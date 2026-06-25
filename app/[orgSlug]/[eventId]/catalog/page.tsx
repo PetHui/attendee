@@ -64,6 +64,13 @@ export default async function CatalogPage({
     }
   }
 
+  // Load map elements
+  const { data: mapElements } = await serviceClient
+    .from('map_elements')
+    .select('*')
+    .eq('event_id', eventId)
+    .order('created_at')
+
   // Load published exhibitors (always, so teaser can show count)
   const { data: exhibitors } = await serviceClient
     .from('exhibitors')
@@ -87,6 +94,7 @@ export default async function CatalogPage({
       participantName={participantName}
       mapImageUrl={event?.map_image_url ?? null}
       mapAspectRatio={event?.map_aspect_ratio ?? 1.5}
+      mapElements={mapElements ?? []}
     />
   )
 }
