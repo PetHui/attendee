@@ -91,7 +91,6 @@ export default function ExhibitorCatalog({
               {qrOpen && (
                 <div className="mt-3 bg-white rounded-2xl p-4 inline-block shadow-lg">
                   <img src={qrCodeBase64} alt="Din QR-kod" width={200} height={200} className="block" />
-                  <p className="text-xs text-gray-400 text-center mt-2">Visa vid incheckning</p>
                 </div>
               )}
             </div>
