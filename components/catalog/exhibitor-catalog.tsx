@@ -107,7 +107,7 @@ function MapView({
               href={detailUrl}
               onMouseEnter={() => setHoveredId(e.id)}
               onMouseLeave={() => setHoveredId(null)}
-              className="absolute rounded border-2 flex flex-col items-center justify-center overflow-hidden transition-all"
+              className="absolute rounded border flex flex-col items-center justify-center overflow-hidden transition-all"
               style={{
                 left: `${e.map_x}%`,
                 top: `${e.map_y}%`,
@@ -117,10 +117,8 @@ function MapView({
                 borderColor: isHighlighted ? brand : isHovered ? brand : 'rgba(0,0,0,0.15)',
                 zIndex: isHighlighted ? 5 : isHovered ? 10 : 1,
                 boxShadow: isHighlighted
-                  ? `0 0 0 1px ${brand}, 0 0 8px 2px ${brand}40`
-                  : isHovered
-                    ? `0 0 0 1px ${brand}`
-                    : undefined,
+                  ? `0 0 8px 2px ${brand}60`
+                  : undefined,
                 transform: isHovered ? 'scale(1.03)' : undefined,
               }}
             >
