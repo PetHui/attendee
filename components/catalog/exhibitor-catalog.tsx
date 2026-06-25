@@ -88,11 +88,11 @@ function MapView({
   return (
     <div className="space-y-3">
       <p className="text-xs text-gray-500 text-center">Klicka på en monter för mer information</p>
-      <div className="relative bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200" style={{ aspectRatio: String(mapAspectRatio) }}>
+      <div className="relative bg-white rounded-xl shadow-sm border border-gray-200" style={{ aspectRatio: String(mapAspectRatio) }}>
         <img
           src={mapImageUrl}
           alt="Hallkarta"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover rounded-xl"
           draggable={false}
         />
         {placed.map((e) => {
