@@ -199,9 +199,9 @@ export default function ExhibitorCatalog({
                     >
                       {/* Namn + monter */}
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-semibold text-gray-900">{ex.company_name}</span>
+                        <div className="text-sm font-semibold text-gray-900">{ex.company_name}</div>
                         {ex.booth_number && (
-                          <span className="text-xs text-gray-400 ml-2">Monter {ex.booth_number}</span>
+                          <div className="text-xs text-gray-400 mt-0.5">Monter {ex.booth_number}</div>
                         )}
                       </div>
 
