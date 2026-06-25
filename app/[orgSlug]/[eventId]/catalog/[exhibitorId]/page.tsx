@@ -71,21 +71,23 @@ export default async function ExhibitorDetailPage({
           <Link href={backUrl} className="text-white/70 text-sm hover:text-white transition-colors">
             ← Tillbaka till katalogen
           </Link>
-          <div className="mt-4 flex items-start justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold">{exhibitor.company_name}</h1>
-              {exhibitor.booth_number && (
-                <p className="text-white/70 text-sm mt-0.5">Monter {exhibitor.booth_number}</p>
-              )}
-            </div>
-            {mapUrl && (
-              <Link
-                href={mapUrl}
-                className="shrink-0 flex items-center gap-1.5 bg-white/20 hover:bg-white/30 transition-colors text-white text-sm font-medium px-3 py-2 rounded-xl whitespace-nowrap"
-              >
-                <span>🗺️</span>
-                <span>Visa på karta</span>
-              </Link>
+          <div className="mt-4">
+            <h1 className="text-2xl font-bold">{exhibitor.company_name}</h1>
+            {(exhibitor.booth_number || mapUrl) && (
+              <div className="flex items-center gap-3 mt-1">
+                {exhibitor.booth_number && (
+                  <p className="text-white/70 text-sm">Monter {exhibitor.booth_number}</p>
+                )}
+                {mapUrl && (
+                  <Link
+                    href={mapUrl}
+                    className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 transition-colors text-white text-sm font-medium px-2.5 py-1 rounded-lg whitespace-nowrap"
+                  >
+                    <span>🗺️</span>
+                    <span>Visa på karta</span>
+                  </Link>
+                )}
+              </div>
             )}
           </div>
         </div>
