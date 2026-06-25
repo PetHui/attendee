@@ -228,7 +228,7 @@ export default function ExhibitorCatalog({
     <div className="min-h-screen bg-gray-50" style={{ '--brand': brand } as React.CSSProperties}>
       {/* Header */}
       <div style={{ background: brand }} className="px-4 pt-8 pb-6 text-white">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <p className="text-white/70 text-sm mb-1">{org.name}</p>
           <h1 className="text-2xl font-bold">{event.title}</h1>
           <p className="text-white/80 text-sm mt-1">Utställarkatalog</p>
@@ -264,7 +264,7 @@ export default function ExhibitorCatalog({
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6">
+      <div className="max-w-5xl mx-auto px-4 py-6">
         {!isUnlocked ? (
           /* Teaser */
           <div className="text-center py-10">
