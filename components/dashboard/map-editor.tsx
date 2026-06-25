@@ -554,7 +554,7 @@ export default function MapEditor({
                     data-item
                     onMouseDown={(ev) => handleItemMouseDown(ev, 'element', el.id)}
                     onClick={(ev) => { ev.stopPropagation(); setSelection(isSelected ? null : { kind: 'element', id: el.id }) }}
-                    className="absolute flex items-center justify-center cursor-grab active:cursor-grabbing rounded overflow-hidden"
+                    className="absolute flex items-center justify-center cursor-grab active:cursor-grabbing rounded overflow-hidden p-1"
                     style={{
                       left: `${el.x}%`, top: `${el.y}%`,
                       width: `${el.w}%`, height: `${el.h}%`,
@@ -562,13 +562,13 @@ export default function MapEditor({
                       border: isSelected
                         ? '2px dashed #1d4ed8'
                         : el.border_color
-                          ? `2px solid ${el.border_color}`
-                          : '2px solid transparent',
+                          ? `1px solid ${el.border_color}`
+                          : '1px solid transparent',
                       zIndex: isSelected ? 20 : 2,
                     }}
                   >
                     <span
-                      className={`${fontSizeClass(el.font_size)} ${el.bold ? 'font-bold' : 'font-medium'} text-center leading-tight px-1`}
+                      className={`${fontSizeClass(el.font_size)} ${el.bold ? 'font-bold' : 'font-medium'} text-center leading-tight`}
                       style={{ color: el.text_color }}
                     >
                       {el.label}
