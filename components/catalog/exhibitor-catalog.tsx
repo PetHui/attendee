@@ -49,6 +49,7 @@ interface MapElement {
   text_color: string
   bg_color: string | null
   bold: boolean
+  border_color: string | null
 }
 
 const DEFAULT_BOOTH_COLOR = '#bfdbfe'
@@ -165,6 +166,7 @@ function MapView({
             left: `${el.x}%`, top: `${el.y}%`,
             width: `${el.w}%`, height: `${el.h}%`,
             backgroundColor: el.bg_color ?? 'transparent',
+            border: el.border_color ? `2px solid ${el.border_color}` : 'none',
             zIndex: 2,
           }}
         >

@@ -54,6 +54,7 @@ export async function PATCH(
       text_color: body.text_color,
       bg_color: body.bg_color ?? null,
       bold: body.bold,
+      border_color: body.border_color ?? null,
     })
     .eq('id', elementId)
     .eq('event_id', id)

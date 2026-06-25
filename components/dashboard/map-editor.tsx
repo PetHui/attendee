@@ -35,6 +35,7 @@ interface MapElement {
   text_color: string
   bg_color: string | null
   bold: boolean
+  border_color: string | null
 }
 
 type DragState = {
@@ -553,17 +554,21 @@ export default function MapEditor({
                     data-item
                     onMouseDown={(ev) => handleItemMouseDown(ev, 'element', el.id)}
                     onClick={(ev) => { ev.stopPropagation(); setSelection(isSelected ? null : { kind: 'element', id: el.id }) }}
-                    className={`absolute flex items-center justify-center cursor-grab active:cursor-grabbing rounded ${el.bg_color ? 'px-2' : ''}`}
+                    className="absolute flex items-center justify-center cursor-grab active:cursor-grabbing rounded overflow-hidden"
                     style={{
                       left: `${el.x}%`, top: `${el.y}%`,
                       width: `${el.w}%`, height: `${el.h}%`,
                       backgroundColor: el.bg_color ?? 'transparent',
-                      border: isSelected ? '2px dashed #1d4ed8' : '2px dashed transparent',
+                      border: isSelected
+                        ? '2px dashed #1d4ed8'
+                        : el.border_color
+                          ? `2px solid ${el.border_color}`
+                          : '2px solid transparent',
                       zIndex: isSelected ? 20 : 2,
                     }}
                   >
                     <span
-                      className={`${fontSizeClass(el.font_size)} ${el.bold ? 'font-bold' : 'font-medium'} text-center leading-tight`}
+                      className={`${fontSizeClass(el.font_size)} ${el.bold ? 'font-bold' : 'font-medium'} text-center leading-tight px-1`}
                       style={{ color: el.text_color }}
                     >
                       {el.label}
@@ -668,9 +673,51 @@ export default function MapEditor({
             </div>
           </div>
 
-          <div className="text-xs text-gray-500 space-y-1">
-            <p>Bredd: {selectedElement.w.toFixed(1)}%</p>
-            <p>Höjd: {selectedElement.h.toFixed(1)}%</p>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Ram</label>
+            <div className="flex gap-2 items-center">
+              <input
+                type="color"
+                value={selectedElement.border_color ?? '#374151'}
+                onChange={(e) => updateElement(selectedElement.id, { border_color: e.target.value })}
+                className="h-8 flex-1 rounded border border-gray-300 cursor-pointer"
+              />
+              {selectedElement.border_color ? (
+                <button onClick={() => updateElement(selectedElement.id, { border_color: null })} className="text-xs text-gray-400 hover:text-gray-600 whitespace-nowrap">
+                  Ingen
+                </button>
+              ) : (
+                <button onClick={() => updateElement(selectedElement.id, { border_color: '#374151' })} className="text-xs text-brand hover:opacity-70 whitespace-nowrap">
+                  Lägg till
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs text-gray-500 mb-2">Storlek (%)</label>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="block text-[10px] text-gray-400 mb-0.5">Bredd</label>
+                <input
+                  type="number"
+                  min={2} max={100} step={0.5}
+                  value={parseFloat(selectedElement.w.toFixed(1))}
+                  onChange={(e) => updateElement(selectedElement.id, { w: parseFloat(e.target.value) || selectedElement.w })}
+                  className="w-full text-xs border border-gray-300 rounded px-2 py-1.5"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-[10px] text-gray-400 mb-0.5">Höjd</label>
+                <input
+                  type="number"
+                  min={1} max={100} step={0.5}
+                  value={parseFloat(selectedElement.h.toFixed(1))}
+                  onChange={(e) => updateElement(selectedElement.id, { h: parseFloat(e.target.value) || selectedElement.h })}
+                  className="w-full text-xs border border-gray-300 rounded px-2 py-1.5"
+                />
+              </div>
+            </div>
           </div>
 
           <button onClick={() => deleteElement(selectedElement.id)} className="w-full text-xs text-red-600 border border-red-200 rounded px-3 py-1.5 hover:bg-red-50">
