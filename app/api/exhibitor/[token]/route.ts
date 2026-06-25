@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 
+function normalizeUrl(url: string | undefined | null): string | null {
+  if (!url || !url.trim()) return null
+  const trimmed = url.trim()
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  return `https://${trimmed}`
+}
+
 async function getExhibitorByToken(token: string) {
   const serviceClient = createServiceClient()
   const { data: exhibitor } = await serviceClient
@@ -36,7 +43,7 @@ export async function PUT(
     .update({
       company_name: body.company_name || exhibitor.company_name,
       description: body.description || null,
-      website: body.website || null,
+      website: normalizeUrl(body.website),
       email: body.email || null,
       phone: body.phone || null,
       booth_number: body.booth_number || null,

@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendExhibitorInviteEmail } from '@/lib/email'
 
+function normalizeUrl(url: string | undefined | null): string | null {
+  if (!url || !url.trim()) return null
+  const trimmed = url.trim()
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  return `https://${trimmed}`
+}
+
 async function getAuthorizedExhibitor(exhibitorId: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -50,7 +57,7 @@ export async function PUT(
     .update({
       company_name: body.company_name,
       description: body.description ?? null,
-      website: body.website ?? null,
+      website: normalizeUrl(body.website),
       email: body.email ?? null,
       phone: body.phone ?? null,
       booth_number: body.booth_number ?? null,
