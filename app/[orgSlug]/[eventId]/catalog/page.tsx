@@ -36,17 +36,26 @@ export default async function CatalogPage({
   // Validate token (participant's QR code in this event)
   let isUnlocked = false
   let qrCodeBase64: string | undefined
+  let participantName: string | undefined
   if (token) {
     const { data: participant } = await serviceClient
       .from('participants')
-      .select('id')
+      .select('id, participant_field_values(value, registration_fields(label, sort_order))')
       .eq('qr_code', token)
       .eq('event_id', eventId)
       .maybeSingle()
     isUnlocked = !!participant
-    if (isUnlocked) {
+    if (isUnlocked && participant) {
       const buf = await QRCode.toBuffer(token, { width: 300, margin: 2 })
       qrCodeBase64 = `data:image/png;base64,${buf.toString('base64')}`
+
+      const nameKeywords = ['förnamn', 'efternamn', 'namn', 'name']
+      const nameValues = (participant.participant_field_values as Array<{ value: string; registration_fields: { label: string; sort_order: number } | null }>)
+        .filter((fv) => fv.registration_fields && nameKeywords.some((kw) => fv.registration_fields!.label.toLowerCase().includes(kw)))
+        .sort((a, b) => (a.registration_fields!.sort_order ?? 0) - (b.registration_fields!.sort_order ?? 0))
+        .map((fv) => fv.value)
+        .filter(Boolean)
+      participantName = nameValues.length ? nameValues.join(' ') : undefined
     }
   }
 
@@ -70,6 +79,7 @@ export default async function CatalogPage({
       registrationUrl={registrationUrl}
       token={token}
       qrCodeBase64={qrCodeBase64}
+      participantName={participantName}
     />
   )
 }

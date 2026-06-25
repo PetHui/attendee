@@ -41,6 +41,7 @@ export default function ExhibitorCatalog({
   registrationUrl,
   token,
   qrCodeBase64,
+  participantName,
 }: {
   event: Event
   org: Org
@@ -49,6 +50,7 @@ export default function ExhibitorCatalog({
   registrationUrl: string
   token?: string
   qrCodeBase64?: string
+  participantName?: string
 }) {
   const brand = org.primary_color ?? '#6366f1'
   const [query, setQuery] = useState('')
@@ -89,7 +91,10 @@ export default function ExhibitorCatalog({
               </button>
 
               {qrOpen && (
-                <div className="mt-3 bg-white rounded-2xl p-4 inline-block shadow-lg">
+                <div className="mt-3 bg-white rounded-2xl p-4 inline-block shadow-lg text-center">
+                  {participantName && (
+                    <p className="text-gray-900 font-semibold text-lg mb-3">{participantName}</p>
+                  )}
                   <img src={qrCodeBase64} alt="Din QR-kod" width={200} height={200} className="block" />
                 </div>
               )}
