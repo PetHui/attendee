@@ -26,7 +26,7 @@ export default async function CatalogPage({
 
   const { data: event } = await serviceClient
     .from('events')
-    .select('id, title, starts_at, ends_at, location, status')
+    .select('id, title, starts_at, ends_at, location, status, map_image_url, map_aspect_ratio')
     .eq('id', eventId)
     .eq('organization_id', org.id)
     .single()
@@ -67,7 +67,7 @@ export default async function CatalogPage({
   // Load published exhibitors (always, so teaser can show count)
   const { data: exhibitors } = await serviceClient
     .from('exhibitors')
-    .select('id, company_name, description, website, email, phone, booth_number, exhibitor_offers(id, title, description)')
+    .select('id, company_name, description, website, email, phone, booth_number, map_x, map_y, map_w, map_h, map_color, exhibitor_offers(id, title, description)')
     .eq('event_id', eventId)
     .eq('status', 'published')
     .order('sort_order')
@@ -85,6 +85,8 @@ export default async function CatalogPage({
       token={token}
       qrCodeBase64={qrCodeBase64}
       participantName={participantName}
+      mapImageUrl={event?.map_image_url ?? null}
+      mapAspectRatio={event?.map_aspect_ratio ?? 1.5}
     />
   )
 }

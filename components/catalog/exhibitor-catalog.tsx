@@ -16,6 +16,11 @@ interface Exhibitor {
   email: string | null
   phone: string | null
   booth_number: string | null
+  map_x: number | null
+  map_y: number | null
+  map_w: number | null
+  map_h: number | null
+  map_color: string | null
   exhibitor_offers: Offer[]
 }
 
@@ -33,6 +38,110 @@ interface Org {
   primary_color: string | null
 }
 
+const DEFAULT_BOOTH_COLOR = '#bfdbfe'
+
+function MapView({
+  exhibitors,
+  mapImageUrl,
+  mapAspectRatio,
+  org,
+  eventId,
+  token,
+  brand,
+}: {
+  exhibitors: Exhibitor[]
+  mapImageUrl: string
+  mapAspectRatio: number
+  org: Org
+  eventId: string
+  token?: string
+  brand: string
+}) {
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const placed = exhibitors.filter((e) => e.map_x != null)
+  const hovered = hoveredId ? placed.find((e) => e.id === hoveredId) : null
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-gray-500 text-center">Klicka på en monter för mer information</p>
+      <div className="relative bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200" style={{ aspectRatio: String(mapAspectRatio) }}>
+        <img
+          src={mapImageUrl}
+          alt="Hallkarta"
+          className="absolute inset-0 w-full h-full object-cover"
+          draggable={false}
+        />
+        {placed.map((e) => {
+          const isHovered = hoveredId === e.id
+          const detailUrl = `/${org.slug}/${eventId}/catalog/${e.id}${token ? `?token=${token}` : ''}`
+          return (
+            <a
+              key={e.id}
+              href={detailUrl}
+              onMouseEnter={() => setHoveredId(e.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              className="absolute rounded border-2 flex flex-col items-center justify-center overflow-hidden transition-all"
+              style={{
+                left: `${e.map_x}%`,
+                top: `${e.map_y}%`,
+                width: `${e.map_w}%`,
+                height: `${e.map_h}%`,
+                backgroundColor: e.map_color ?? DEFAULT_BOOTH_COLOR,
+                borderColor: isHovered ? brand : 'rgba(0,0,0,0.15)',
+                zIndex: isHovered ? 10 : 1,
+                boxShadow: isHovered ? `0 0 0 2px ${brand}` : undefined,
+                transform: isHovered ? 'scale(1.03)' : undefined,
+              }}
+            >
+              <span className="text-[10px] font-semibold text-gray-800 text-center px-1 leading-tight w-full text-center truncate">
+                {e.company_name}
+              </span>
+              {e.booth_number && (
+                <span className="text-[8px] text-gray-600">{e.booth_number}</span>
+              )}
+              {e.exhibitor_offers.length > 0 && (
+                <span className="text-[8px]">🎁</span>
+              )}
+            </a>
+          )
+        })}
+      </div>
+
+      {hovered && (
+        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-semibold text-gray-900">{hovered.company_name}</p>
+              {hovered.booth_number && (
+                <p className="text-xs text-gray-500 mt-0.5">Monter {hovered.booth_number}</p>
+              )}
+              {hovered.description && (
+                <p className="text-sm text-gray-600 mt-2 line-clamp-2">{hovered.description}</p>
+              )}
+              {hovered.exhibitor_offers.length > 0 && (
+                <p className="text-xs text-amber-600 font-medium mt-2">🎁 {hovered.exhibitor_offers.length} erbjudande{hovered.exhibitor_offers.length > 1 ? 'n' : ''}</p>
+              )}
+            </div>
+            <a
+              href={`/${org.slug}/${eventId}/catalog/${hovered.id}${token ? `?token=${token}` : ''}`}
+              style={{ backgroundColor: brand }}
+              className="shrink-0 text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:opacity-90"
+            >
+              Mer info →
+            </a>
+          </div>
+        </div>
+      )}
+
+      {placed.length === 0 && (
+        <div className="text-center py-8 text-gray-400 text-sm">
+          Inga montrar har placerats ut på kartan ännu.
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function ExhibitorCatalog({
   event,
   org,
@@ -42,6 +151,8 @@ export default function ExhibitorCatalog({
   token,
   qrCodeBase64,
   participantName,
+  mapImageUrl,
+  mapAspectRatio,
 }: {
   event: Event
   org: Org
@@ -51,10 +162,15 @@ export default function ExhibitorCatalog({
   token?: string
   qrCodeBase64?: string
   participantName?: string
+  mapImageUrl: string | null
+  mapAspectRatio: number
 }) {
   const brand = org.primary_color ?? '#6366f1'
   const [query, setQuery] = useState('')
   const [qrOpen, setQrOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<'lista' | 'karta'>('lista')
+  const hasMap = !!mapImageUrl
+
   const filtered = query.trim()
     ? exhibitors.filter((e) =>
         e.company_name.toLowerCase().includes(query.toLowerCase()) ||
@@ -153,7 +269,7 @@ export default function ExhibitorCatalog({
             )}
           </div>
         ) : (
-          /* Upplåst katalog — kompakt lista */
+          /* Upplåst katalog */
           <div>
             <div className="flex items-center gap-3 mb-4 text-sm text-gray-500">
               <span>{exhibitors.length} utställare</span>
@@ -162,64 +278,97 @@ export default function ExhibitorCatalog({
               )}
             </div>
 
-            {/* Sökfält */}
-            <div className="relative mb-4">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-              </svg>
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Sök utställare eller monternummer..."
-                className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+            {/* Tabbar */}
+            {hasMap && (
+              <div className="flex gap-1 mb-4 bg-gray-100 rounded-xl p-1">
+                <button
+                  onClick={() => setActiveTab('lista')}
+                  className={`flex-1 text-sm font-medium py-2 rounded-lg transition-all ${
+                    activeTab === 'lista' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Lista
+                </button>
+                <button
+                  onClick={() => setActiveTab('karta')}
+                  className={`flex-1 text-sm font-medium py-2 rounded-lg transition-all ${
+                    activeTab === 'karta' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Karta
+                </button>
+              </div>
+            )}
+
+            {activeTab === 'karta' && hasMap ? (
+              <MapView
+                exhibitors={exhibitors}
+                mapImageUrl={mapImageUrl!}
+                mapAspectRatio={mapAspectRatio}
+                org={org}
+                eventId={event.id}
+                token={token}
+                brand={brand}
               />
-            </div>
-
-            {filtered.length === 0 ? (
-              <div className="text-center py-12 text-gray-400">
-                <p className="text-3xl mb-3">🔍</p>
-                <p>Inga utställare matchar "{query}".</p>
-              </div>
-            ) : exhibitors.length === 0 ? (
-              <div className="text-center py-12 text-gray-400">
-                <p className="text-4xl mb-3">🏢</p>
-                <p>Inga utställare publicerade ännu.</p>
-              </div>
             ) : (
-              <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-                {filtered.map((ex, i) => {
-                  const hasOffer = ex.exhibitor_offers.length > 0
-                  const detailUrl = `/${org.slug}/${event.id}/catalog/${ex.id}${token ? `?token=${token}` : ''}`
-                  return (
-                    <a
-                      key={ex.id}
-                      href={detailUrl}
-                      className={`flex items-center px-4 py-3.5 hover:bg-gray-50 transition-colors ${i > 0 ? 'border-t border-gray-100' : ''}`}
-                    >
-                      {/* Namn + monter */}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-gray-900">{ex.company_name}</div>
-                        {ex.booth_number && (
-                          <div className="text-xs text-gray-400 mt-0.5">Monter {ex.booth_number}</div>
-                        )}
-                      </div>
+              <>
+                {/* Sökfält */}
+                <div className="relative mb-4">
+                  <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                  </svg>
+                  <input
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Sök utställare eller monternummer..."
+                    className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+                  />
+                </div>
 
-                      {/* Höger: erbjudande-badge + pil */}
-                      <div className="flex items-center gap-2 shrink-0">
-                        {hasOffer && (
-                          <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                            🎁 Erbjudande
-                          </span>
-                        )}
-                        <svg className="w-4 h-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </a>
-                  )
-                })}
-              </div>
+                {filtered.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400">
+                    <p className="text-3xl mb-3">🔍</p>
+                    <p>Inga utställare matchar "{query}".</p>
+                  </div>
+                ) : exhibitors.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400">
+                    <p className="text-4xl mb-3">🏢</p>
+                    <p>Inga utställare publicerade ännu.</p>
+                  </div>
+                ) : (
+                  <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                    {filtered.map((ex, i) => {
+                      const hasOffer = ex.exhibitor_offers.length > 0
+                      const detailUrl = `/${org.slug}/${event.id}/catalog/${ex.id}${token ? `?token=${token}` : ''}`
+                      return (
+                        <a
+                          key={ex.id}
+                          href={detailUrl}
+                          className={`flex items-center px-4 py-3.5 hover:bg-gray-50 transition-colors ${i > 0 ? 'border-t border-gray-100' : ''}`}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-semibold text-gray-900">{ex.company_name}</div>
+                            {ex.booth_number && (
+                              <div className="text-xs text-gray-400 mt-0.5">Monter {ex.booth_number}</div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {hasOffer && (
+                              <span className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                                🎁 Erbjudande
+                              </span>
+                            )}
+                            <svg className="w-4 h-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        </a>
+                      )
+                    })}
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
