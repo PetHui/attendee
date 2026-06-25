@@ -123,9 +123,6 @@ function MapView({
               {e.booth_number && (
                 <span className="text-[8px] text-gray-600">{e.booth_number}</span>
               )}
-              {e.exhibitor_offers.length > 0 && (
-                <span className="text-[8px]">🎁</span>
-              )}
             </a>
           )
         })}
