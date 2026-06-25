@@ -115,6 +115,12 @@ export async function POST(request: Request) {
   // Send confirmation email (non-blocking fail)
   if (emailValue) {
     try {
+      const emailCustomTexts = {
+        emailIntroText: event.email_intro_text ?? undefined,
+        emailQrInstruction: event.email_qr_instruction ?? undefined,
+        emailFooterNote: event.email_footer_note ?? undefined,
+      }
+
       if (catalogUrl) {
         await sendConfirmationEmailWithCatalog({
           to: emailValue,
@@ -127,6 +133,7 @@ export async function POST(request: Request) {
           qrCode: participant.qr_code,
           catalogUrl,
           brandColor,
+          ...emailCustomTexts,
         })
       } else {
         await sendConfirmationEmail({
@@ -139,6 +146,7 @@ export async function POST(request: Request) {
           eventEndsAt: event.ends_at,
           qrCode: participant.qr_code,
           brandColor,
+          ...emailCustomTexts,
         })
       }
     } catch (err) {

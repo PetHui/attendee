@@ -15,6 +15,10 @@ function formatSwedishDate(dateStr: string | null): string {
   })
 }
 
+const DEFAULT_INTRO_TEXT = 'Din anmälan är bekräftad. Vi ser fram emot att träffa dig!'
+const DEFAULT_QR_INSTRUCTION = 'Visa denna kod vid entrén'
+const DEFAULT_FOOTER_NOTE = 'Har du frågor? Kontakta arrangören direkt.'
+
 export async function sendConfirmationEmail({
   to,
   participantName,
@@ -25,6 +29,9 @@ export async function sendConfirmationEmail({
   eventEndsAt,
   qrCode,
   brandColor = '#6366f1',
+  emailIntroText,
+  emailQrInstruction,
+  emailFooterNote,
 }: {
   to: string
   participantName: string
@@ -35,6 +42,9 @@ export async function sendConfirmationEmail({
   eventEndsAt: string | null
   qrCode: string
   brandColor?: string
+  emailIntroText?: string | null
+  emailQrInstruction?: string | null
+  emailFooterNote?: string | null
 }) {
   const qrBuffer = await QRCode.toBuffer(qrCode, {
     width: 300,
@@ -42,6 +52,10 @@ export async function sendConfirmationEmail({
     color: { dark: '#1e1b4b', light: '#ffffff' },
   })
   const qrBase64 = `data:image/png;base64,${qrBuffer.toString('base64')}`
+
+  const introText = emailIntroText ?? DEFAULT_INTRO_TEXT
+  const qrInstruction = emailQrInstruction ?? DEFAULT_QR_INSTRUCTION
+  const footerNote = emailFooterNote ?? DEFAULT_FOOTER_NOTE
 
   const html = `<!DOCTYPE html>
 <html lang="sv">
@@ -64,7 +78,7 @@ export async function sendConfirmationEmail({
           <tr>
             <td style="background:#ffffff;padding:32px;border:1px solid #e5e7eb;border-top:none;">
               <p style="font-size:16px;color:#374151;margin:0 0 8px;">Hej <strong>${participantName}</strong>!</p>
-              <p style="font-size:16px;color:#374151;margin:0 0 28px;">Din anmälan är bekräftad. Vi ser fram emot att träffa dig!</p>
+              <p style="font-size:16px;color:#374151;margin:0 0 28px;">${introText}</p>
 
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:28px;">
                 <tr>
@@ -81,8 +95,9 @@ export async function sendConfirmationEmail({
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="padding:24px;background:#f9fafb;border:2px dashed #d1d5db;border-radius:8px;text-align:center;">
-                    <p style="font-size:15px;font-weight:600;color:#374151;margin:0 0 4px;">Din QR-kod för incheckning</p>
-                    <p style="font-size:13px;color:#9ca3af;margin:0 0 16px;">Visa denna kod vid entrén</p>
+                    <p style="font-size:15px;font-weight:600;color:#374151;margin:0 0 4px;">${participantName}</p>
+                    <p style="font-size:15px;font-weight:600;color:#374151;margin:0 0 4px;">Din personliga QR-kod</p>
+                    <p style="font-size:13px;color:#9ca3af;margin:0 0 16px;">${qrInstruction}</p>
                     <img src="${qrBase64}" alt="QR-kod" width="200" height="200" style="display:block;margin:0 auto;border-radius:4px;" />
                     <p style="font-size:12px;color:#9ca3af;margin:16px 0 0;">Spara detta e-postmeddelande eller skärmdumpa QR-koden.</p>
                   </td>
@@ -90,7 +105,7 @@ export async function sendConfirmationEmail({
               </table>
 
               <p style="font-size:12px;color:#9ca3af;text-align:center;margin:24px 0 0;">
-                Har du frågor? Kontakta arrangören direkt.
+                ${footerNote}
               </p>
             </td>
           </tr>
@@ -124,6 +139,10 @@ export async function sendConfirmationEmailWithCatalog({
     color: { dark: '#1e1b4b', light: '#ffffff' },
   })
   const qrBase64 = `data:image/png;base64,${qrBuffer.toString('base64')}`
+
+  const introText = rest.emailIntroText ?? DEFAULT_INTRO_TEXT
+  const qrInstruction = rest.emailQrInstruction ?? DEFAULT_QR_INSTRUCTION
+  const footerNote = rest.emailFooterNote ?? DEFAULT_FOOTER_NOTE
 
   const catalogSection = catalogUrl
     ? `<tr>
@@ -164,7 +183,7 @@ export async function sendConfirmationEmailWithCatalog({
           <tr>
             <td style="background:#ffffff;padding:32px;border:1px solid #e5e7eb;border-top:none;">
               <p style="font-size:16px;color:#374151;margin:0 0 8px;">Hej <strong>${rest.participantName}</strong>!</p>
-              <p style="font-size:16px;color:#374151;margin:0 0 28px;">Din anmälan är bekräftad. Vi ser fram emot att träffa dig!</p>
+              <p style="font-size:16px;color:#374151;margin:0 0 28px;">${introText}</p>
 
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:28px;">
                 <tr>
@@ -181,8 +200,9 @@ export async function sendConfirmationEmailWithCatalog({
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="padding:24px;background:#f9fafb;border:2px dashed #d1d5db;border-radius:8px;text-align:center;">
-                    <p style="font-size:15px;font-weight:600;color:#374151;margin:0 0 4px;">Din QR-kod för incheckning</p>
-                    <p style="font-size:13px;color:#9ca3af;margin:0 0 16px;">Visa denna kod vid entrén</p>
+                    <p style="font-size:15px;font-weight:600;color:#374151;margin:0 0 4px;">${rest.participantName}</p>
+                    <p style="font-size:15px;font-weight:600;color:#374151;margin:0 0 4px;">Din personliga QR-kod</p>
+                    <p style="font-size:13px;color:#9ca3af;margin:0 0 16px;">${qrInstruction}</p>
                     <img src="${qrBase64}" alt="QR-kod" width="200" height="200" style="display:block;margin:0 auto;border-radius:4px;" />
                     <p style="font-size:12px;color:#9ca3af;margin:16px 0 0;">Spara detta e-postmeddelande eller skärmdumpa QR-koden.</p>
                   </td>
@@ -190,7 +210,7 @@ export async function sendConfirmationEmailWithCatalog({
               </table>
 
               <p style="font-size:12px;color:#9ca3af;text-align:center;margin:24px 0 0;">
-                Har du frågor? Kontakta arrangören direkt.
+                ${footerNote}
               </p>
             </td>
           </tr>

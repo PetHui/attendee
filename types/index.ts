@@ -34,6 +34,9 @@ export interface Event {
   status: EventStatus
   primary_color: string | null
   checkin_token: string
+  email_intro_text: string | null
+  email_qr_instruction: string | null
+  email_footer_note: string | null
   created_at: string
 }
 

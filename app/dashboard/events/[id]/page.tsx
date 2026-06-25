@@ -67,7 +67,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4">
-        <EventForm event={event} organizationId={effectiveOrgId ?? ''} orgColor={orgColor} />
+        <EventForm event={event} organizationId={effectiveOrgId ?? ''} orgColor={orgColor} isSuperadmin={userData?.role === 'superadmin'} />
       </div>
 
       {/* Quick links */}

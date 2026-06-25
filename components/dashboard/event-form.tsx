@@ -25,9 +25,10 @@ interface EventFormProps {
   event?: Event
   organizationId: string
   orgColor?: string | null
+  isSuperadmin?: boolean
 }
 
-export default function EventForm({ event, organizationId, orgColor }: EventFormProps) {
+export default function EventForm({ event, organizationId, orgColor, isSuperadmin = false }: EventFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -48,6 +49,10 @@ export default function EventForm({ event, organizationId, orgColor }: EventForm
       : '',
     status: event?.status ?? 'draft',
   })
+
+  const [emailIntroText, setEmailIntroText] = useState(event?.email_intro_text ?? '')
+  const [emailQrInstruction, setEmailQrInstruction] = useState(event?.email_qr_instruction ?? '')
+  const [emailFooterNote, setEmailFooterNote] = useState(event?.email_footer_note ?? '')
 
   const [useCustomColor, setUseCustomColor] = useState(!!event?.primary_color)
   const [color, setColor] = useState(event?.primary_color ?? orgColor ?? '#6366f1')
@@ -88,6 +93,9 @@ export default function EventForm({ event, organizationId, orgColor }: EventForm
       max_participants: form.max_participants ? parseInt(form.max_participants) : null,
       registration_deadline: form.registration_deadline || null,
       primary_color: useCustomColor && isValidHex(color) ? color : null,
+      email_intro_text: isSuperadmin ? (emailIntroText.trim() || null) : undefined,
+      email_qr_instruction: isSuperadmin ? (emailQrInstruction.trim() || null) : undefined,
+      email_footer_note: isSuperadmin ? (emailFooterNote.trim() || null) : undefined,
     }
 
     const url = event ? `/api/events/${event.id}` : '/api/events'
@@ -292,6 +300,63 @@ export default function EventForm({ event, organizationId, orgColor }: EventForm
           </div>
         )}
       </div>
+
+      {isSuperadmin && (
+        <div className="border border-amber-200 bg-amber-50 rounded-lg p-4 space-y-4">
+          <div>
+            <p className="text-sm font-medium text-amber-800">E-postbekräftelse — anpassade texter</p>
+            <p className="text-xs text-amber-600 mt-0.5">Lämna tomt för att använda standardtexten.</p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-amber-800 mb-1">
+              Inledningstext
+            </label>
+            <p className="text-xs text-amber-600 mb-1.5">
+              Standard: "Din anmälan är bekräftad. Vi ser fram emot att träffa dig!"
+            </p>
+            <textarea
+              value={emailIntroText}
+              onChange={(e) => setEmailIntroText(e.target.value)}
+              rows={2}
+              className="w-full border border-amber-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white resize-none"
+              placeholder="Din anmälan är bekräftad. Vi ser fram emot att träffa dig!"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-amber-800 mb-1">
+              Instruktion under QR-koden
+            </label>
+            <p className="text-xs text-amber-600 mb-1.5">
+              Standard: "Visa denna kod vid entrén"
+            </p>
+            <input
+              type="text"
+              value={emailQrInstruction}
+              onChange={(e) => setEmailQrInstruction(e.target.value)}
+              className="w-full border border-amber-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white"
+              placeholder="Visa denna kod vid entrén"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-amber-800 mb-1">
+              Fotnot
+            </label>
+            <p className="text-xs text-amber-600 mb-1.5">
+              Standard: "Har du frågor? Kontakta arrangören direkt."
+            </p>
+            <input
+              type="text"
+              value={emailFooterNote}
+              onChange={(e) => setEmailFooterNote(e.target.value)}
+              className="w-full border border-amber-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white"
+              placeholder="Har du frågor? Kontakta arrangören direkt."
+            />
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-3 pt-2">
         <button

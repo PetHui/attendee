@@ -46,7 +46,7 @@ export default async function NewEventPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <EventForm organizationId={organizationId} orgColor={org?.primary_color ?? null} />
+        <EventForm organizationId={organizationId} orgColor={org?.primary_color ?? null} isSuperadmin={userData?.role === 'superadmin'} />
       </div>
     </div>
   )
