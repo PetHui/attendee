@@ -68,16 +68,11 @@ export default async function ExhibitorDetailPage({
           <Link href={backUrl} className="text-white/70 text-sm hover:text-white transition-colors">
             ← Tillbaka till katalogen
           </Link>
-          <div className="flex items-center gap-4 mt-4">
-            <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-xl font-bold shrink-0">
-              {exhibitor.company_name.slice(0, 2).toUpperCase()}
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">{exhibitor.company_name}</h1>
-              {exhibitor.booth_number && (
-                <p className="text-white/70 text-sm mt-0.5">Monter {exhibitor.booth_number}</p>
-              )}
-            </div>
+          <div className="mt-4">
+            <h1 className="text-2xl font-bold">{exhibitor.company_name}</h1>
+            {exhibitor.booth_number && (
+              <p className="text-white/70 text-sm mt-0.5">Monter {exhibitor.booth_number}</p>
+            )}
           </div>
         </div>
       </div>
