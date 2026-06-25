@@ -129,6 +129,28 @@ function MapView({
             </a>
           )
         })}
+
+        {/* Textelement */}
+        {mapElements.map((el) => (
+          <div
+            key={el.id}
+            className="absolute flex items-center justify-center pointer-events-none rounded"
+            style={{
+              left: `${el.x}%`, top: `${el.y}%`,
+              width: `${el.w}%`, height: `${el.h}%`,
+              backgroundColor: el.bg_color ?? 'transparent',
+              border: el.border_color ? `2px solid ${el.border_color}` : 'none',
+              zIndex: 2,
+            }}
+          >
+            <span
+              className={`${FONT_SIZE_CLASSES[el.font_size] ?? 'text-xs'} ${el.bold ? 'font-bold' : 'font-medium'} text-center leading-tight px-1`}
+              style={{ color: el.text_color }}
+            >
+              {el.label}
+            </span>
+          </div>
+        ))}
       </div>
 
       {hovered && (
@@ -156,28 +178,6 @@ function MapView({
           </div>
         </div>
       )}
-
-      {/* Textelement */}
-      {mapElements.map((el) => (
-        <div
-          key={el.id}
-          className={`absolute flex items-center justify-center pointer-events-none rounded ${el.bg_color ? 'px-2' : ''}`}
-          style={{
-            left: `${el.x}%`, top: `${el.y}%`,
-            width: `${el.w}%`, height: `${el.h}%`,
-            backgroundColor: el.bg_color ?? 'transparent',
-            border: el.border_color ? `2px solid ${el.border_color}` : 'none',
-            zIndex: 2,
-          }}
-        >
-          <span
-            className={`${FONT_SIZE_CLASSES[el.font_size] ?? 'text-xs'} ${el.bold ? 'font-bold' : 'font-medium'} text-center leading-tight`}
-            style={{ color: el.text_color }}
-          >
-            {el.label}
-          </span>
-        </div>
-      ))}
 
       {placed.length === 0 && (
         <div className="text-center py-8 text-gray-400 text-sm">
