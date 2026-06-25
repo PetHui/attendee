@@ -24,7 +24,7 @@ export default async function ExhibitorDetailPage({
 
   const { data: event } = await serviceClient
     .from('events')
-    .select('id, title')
+    .select('id, title, map_image_url')
     .eq('id', eventId)
     .eq('organization_id', org.id)
     .single()
@@ -57,6 +57,9 @@ export default async function ExhibitorDetailPage({
 
   const brand = org.primary_color ?? '#6366f1'
   const backUrl = `/${orgSlug}/${eventId}/catalog?token=${token}`
+  const mapUrl = event?.map_image_url && exhibitor.map_x != null
+    ? `/${orgSlug}/${eventId}/catalog?token=${token}&tab=karta&highlight=${exhibitorId}`
+    : null
   const offer = (exhibitor.exhibitor_offers as any[])?.[0] ?? null
   const contacts = (exhibitor.exhibitor_contacts as any[]) ?? []
 
@@ -68,10 +71,21 @@ export default async function ExhibitorDetailPage({
           <Link href={backUrl} className="text-white/70 text-sm hover:text-white transition-colors">
             ← Tillbaka till katalogen
           </Link>
-          <div className="mt-4">
-            <h1 className="text-2xl font-bold">{exhibitor.company_name}</h1>
-            {exhibitor.booth_number && (
-              <p className="text-white/70 text-sm mt-0.5">Monter {exhibitor.booth_number}</p>
+          <div className="mt-4 flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold">{exhibitor.company_name}</h1>
+              {exhibitor.booth_number && (
+                <p className="text-white/70 text-sm mt-0.5">Monter {exhibitor.booth_number}</p>
+              )}
+            </div>
+            {mapUrl && (
+              <Link
+                href={mapUrl}
+                className="shrink-0 flex items-center gap-1.5 bg-white/20 hover:bg-white/30 transition-colors text-white text-sm font-medium px-3 py-2 rounded-xl whitespace-nowrap"
+              >
+                <span>🗺️</span>
+                <span>Visa på karta</span>
+              </Link>
             )}
           </div>
         </div>

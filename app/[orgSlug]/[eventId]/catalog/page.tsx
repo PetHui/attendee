@@ -8,10 +8,10 @@ export default async function CatalogPage({
   searchParams,
 }: {
   params: Promise<{ orgSlug: string; eventId: string }>
-  searchParams: Promise<{ token?: string }>
+  searchParams: Promise<{ token?: string; tab?: string; highlight?: string }>
 }) {
   const { orgSlug, eventId } = await params
-  const { token } = await searchParams
+  const { token, tab, highlight } = await searchParams
 
   const serviceClient = createServiceClient()
 
@@ -95,6 +95,8 @@ export default async function CatalogPage({
       mapImageUrl={event?.map_image_url ?? null}
       mapAspectRatio={event?.map_aspect_ratio ?? 1.5}
       mapElements={mapElements ?? []}
+      initialTab={tab === 'karta' ? 'karta' : 'lista'}
+      highlightExhibitorId={highlight}
     />
   )
 }

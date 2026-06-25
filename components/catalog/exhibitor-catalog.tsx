@@ -71,6 +71,7 @@ function MapView({
   eventId,
   token,
   brand,
+  highlightExhibitorId,
 }: {
   exhibitors: Exhibitor[]
   mapElements: MapElement[]
@@ -80,6 +81,7 @@ function MapView({
   eventId: string
   token?: string
   brand: string
+  highlightExhibitorId?: string
 }) {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const placed = exhibitors.filter((e) => e.map_x != null)
@@ -97,6 +99,7 @@ function MapView({
         />
         {placed.map((e) => {
           const isHovered = hoveredId === e.id
+          const isHighlighted = highlightExhibitorId === e.id
           const detailUrl = `/${org.slug}/${eventId}/catalog/${e.id}${token ? `?token=${token}` : ''}`
           return (
             <a
@@ -111,9 +114,13 @@ function MapView({
                 width: `${e.map_w}%`,
                 height: `${e.map_h}%`,
                 backgroundColor: e.map_color ?? DEFAULT_BOOTH_COLOR,
-                borderColor: isHovered ? brand : 'rgba(0,0,0,0.15)',
-                zIndex: isHovered ? 10 : 1,
-                boxShadow: isHovered ? `0 0 0 2px ${brand}` : undefined,
+                borderColor: isHighlighted ? brand : isHovered ? brand : 'rgba(0,0,0,0.15)',
+                zIndex: isHighlighted ? 5 : isHovered ? 10 : 1,
+                boxShadow: isHighlighted
+                  ? `0 0 0 3px ${brand}, 0 0 12px 2px ${brand}40`
+                  : isHovered
+                    ? `0 0 0 2px ${brand}`
+                    : undefined,
                 transform: isHovered ? 'scale(1.03)' : undefined,
               }}
             >
@@ -197,6 +204,8 @@ export default function ExhibitorCatalog({
   mapImageUrl,
   mapAspectRatio,
   mapElements,
+  initialTab,
+  highlightExhibitorId,
 }: {
   event: Event
   org: Org
@@ -209,11 +218,13 @@ export default function ExhibitorCatalog({
   mapImageUrl: string | null
   mapAspectRatio: number
   mapElements: MapElement[]
+  initialTab?: 'lista' | 'karta'
+  highlightExhibitorId?: string
 }) {
   const brand = org.primary_color ?? '#6366f1'
   const [query, setQuery] = useState('')
   const [qrOpen, setQrOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<'lista' | 'karta'>('lista')
+  const [activeTab, setActiveTab] = useState<'lista' | 'karta'>(initialTab ?? 'lista')
   const hasMap = !!mapImageUrl
 
   const filtered = query.trim()
@@ -355,6 +366,7 @@ export default function ExhibitorCatalog({
                 eventId={event.id}
                 token={token}
                 brand={brand}
+                highlightExhibitorId={highlightExhibitorId}
               />
             ) : (
               <>
