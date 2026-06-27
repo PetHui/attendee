@@ -30,6 +30,7 @@ interface Event {
   starts_at: string | null
   ends_at: string | null
   location: string | null
+  primary_color?: string | null
 }
 
 interface Org {
@@ -217,7 +218,7 @@ export default function ExhibitorCatalog({
   initialTab?: 'lista' | 'karta'
   highlightExhibitorId?: string
 }) {
-  const brand = org.primary_color ?? '#172554'
+  const brand = event.primary_color ?? org.primary_color ?? '#172554'
   const [query, setQuery] = useState('')
   const [qrOpen, setQrOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'lista' | 'karta'>(initialTab ?? 'lista')

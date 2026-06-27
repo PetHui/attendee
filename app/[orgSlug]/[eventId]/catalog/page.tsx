@@ -26,7 +26,7 @@ export default async function CatalogPage({
 
   const { data: event } = await serviceClient
     .from('events')
-    .select('id, title, starts_at, ends_at, location, status, map_image_url, map_aspect_ratio')
+    .select('id, title, starts_at, ends_at, location, status, map_image_url, map_aspect_ratio, primary_color')
     .eq('id', eventId)
     .eq('organization_id', org.id)
     .single()
