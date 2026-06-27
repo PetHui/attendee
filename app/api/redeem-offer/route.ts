@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
-  const { qrCode, editToken } = await request.json()
+  const { qrCode, shortCode, editToken } = await request.json()
 
-  if (!qrCode || !editToken) {
+  if ((!qrCode && !shortCode) || !editToken) {
     return NextResponse.json({ error: 'Saknade parametrar.' }, { status: 400 })
   }
 
@@ -32,16 +32,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Inget erbjudande konfigurerat.' }, { status: 404 })
   }
 
-  // Find participant by QR code (must belong to same event)
-  const { data: participant } = await serviceClient
+  // Find participant by QR code or short code (must belong to same event)
+  let participantQuery = serviceClient
     .from('participants')
     .select('id, participant_field_values(value, registration_fields(label))')
-    .eq('qr_code', qrCode)
     .eq('event_id', exhibitor.event_id)
-    .single()
+
+  if (qrCode) {
+    participantQuery = participantQuery.eq('qr_code', qrCode)
+  } else {
+    participantQuery = participantQuery.ilike('qr_code', `${shortCode.toLowerCase()}%`)
+  }
+
+  const { data: participant } = await participantQuery.single()
 
   if (!participant) {
-    return NextResponse.json({ error: 'Ogiltig QR-kod eller fel evenemang.' }, { status: 404 })
+    return NextResponse.json({ error: 'Ogiltig kod eller fel evenemang.' }, { status: 404 })
   }
 
   // Check for existing redemption

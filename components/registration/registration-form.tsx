@@ -13,6 +13,7 @@ export default function RegistrationForm({
   const [values, setValues] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [shortCode, setShortCode] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   function handleChange(fieldId: string, value: string) {
@@ -50,6 +51,7 @@ export default function RegistrationForm({
       return
     }
 
+    if (data.shortCode) setShortCode(data.shortCode)
     setSubmitted(true)
   }
 
@@ -61,7 +63,14 @@ export default function RegistrationForm({
         <p className="text-gray-600 leading-relaxed">
           Du är nu anmäld. En bekräftelse med din personliga QR-kod har skickats till din e-post.
         </p>
-        <p className="text-gray-400 text-sm mt-3">
+        {shortCode && (
+          <div className="mt-5 bg-gray-50 border border-gray-200 rounded-xl p-4 inline-block">
+            <p className="text-xs text-gray-500 mb-1">Din inträdes­kod</p>
+            <p className="text-3xl font-bold tracking-widest text-gray-900">{shortCode}</p>
+            <p className="text-xs text-gray-400 mt-1">Samma kod finns i ditt bekräftelsemail</p>
+          </div>
+        )}
+        <p className="text-gray-400 text-sm mt-4">
           Kontrollera skräpposten om mailet inte dyker upp inom någon minut.
         </p>
       </div>

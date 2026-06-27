@@ -154,5 +154,6 @@ export async function POST(request: Request) {
     }
   }
 
-  return NextResponse.json({ success: true, participantId: participant.id })
+  const shortCode = (participant.qr_code as string).slice(0, 6).toUpperCase()
+  return NextResponse.json({ success: true, participantId: participant.id, shortCode })
 }

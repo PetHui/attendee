@@ -130,6 +130,9 @@ export default function ExhibitorPortal({
   const [scanError, setScanError] = useState<string | null>(null)
   const [isScanning, setIsScanning] = useState(false)
   const [showScanner, setShowScanner] = useState(true)
+  const [manualCode, setManualCode] = useState('')
+  const [manualError, setManualError] = useState<string | null>(null)
+  const [manualResult, setManualResult] = useState<{ name?: string; alreadyRedeemed: boolean } | null>(null)
 
   function exportCSV() {
     const rows = [['Namn', 'Tid']]
@@ -252,6 +255,35 @@ export default function ExhibitorPortal({
     },
     [isScanning, editToken]
   )
+
+  async function handleManualRedeem(e: React.FormEvent) {
+    e.preventDefault()
+    if (manualCode.trim().length < 4) return
+    setManualError(null)
+    setManualResult(null)
+    try {
+      const res = await fetch('/api/redeem-offer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shortCode: manualCode.trim(), editToken }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setManualError(data.error ?? 'Okänt fel')
+      } else {
+        setManualResult(data)
+        if (!data.alreadyRedeemed) {
+          setRedemptions((prev) => [
+            { id: data.redemptionId, participant_id: data.participantId, redeemed_at: new Date().toISOString(), name: data.name ?? undefined },
+            ...prev,
+          ])
+        }
+        setManualCode('')
+      }
+    } catch {
+      setManualError('Nätverksfel. Kontrollera anslutningen.')
+    }
+  }
 
   const homeCards = [
     {
@@ -551,6 +583,32 @@ export default function ExhibitorPortal({
                       </div>
                     )}
                   </div>
+                </div>
+
+                <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                  <p className="text-sm font-medium text-gray-700 mb-1">Mata in kod manuellt</p>
+                  <p className="text-xs text-gray-400 mb-3">Fungerar inte kameran? Be besökaren visa sin 6-siffriga kod.</p>
+                  <form onSubmit={handleManualRedeem} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={manualCode}
+                      onChange={(e) => { setManualCode(e.target.value.toUpperCase()); setManualError(null); setManualResult(null) }}
+                      placeholder="T.ex. A3F9B2"
+                      maxLength={8}
+                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono tracking-widest uppercase focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-800"
+                    />
+                    <button type="submit" disabled={manualCode.trim().length < 4} className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-40 transition-opacity">
+                      Lös in
+                    </button>
+                  </form>
+                  {manualResult && (
+                    <div className={`mt-3 rounded-xl p-3 text-sm text-center ${manualResult.alreadyRedeemed ? 'bg-amber-50 text-amber-700' : 'bg-green-50 text-green-700'}`}>
+                      {manualResult.alreadyRedeemed ? '⚠️ Redan inlöst' : `✅ Inlöst!${manualResult.name ? ` (${manualResult.name})` : ''}`}
+                    </div>
+                  )}
+                  {manualError && (
+                    <div className="mt-3 rounded-xl p-3 text-sm text-center bg-red-50 text-red-700">❌ {manualError}</div>
+                  )}
                 </div>
 
                 <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
