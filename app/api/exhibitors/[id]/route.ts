@@ -49,21 +49,36 @@ export async function PUT(
   const result = await getAuthorizedExhibitor(id)
   if ('error' in result) return NextResponse.json({ error: result.error }, { status: result.status })
 
-  const { serviceClient } = result
+  const { serviceClient, exhibitor } = result
   const body = await request.json()
+
+  const updates: Record<string, unknown> = {
+    company_name: body.company_name,
+    description: body.description ?? null,
+    website: normalizeUrl(body.website),
+    email: body.email ?? null,
+    phone: body.phone ?? null,
+    booth_number: body.booth_number ?? null,
+    status: body.status,
+    assigned_preset_id: body.assigned_preset_id ?? null,
+  }
+
+  // Om utställaren är utplacerad och en preset valdes — uppdatera kartstorleken direkt
+  if (body.assigned_preset_id && exhibitor.map_x != null) {
+    const { data: preset } = await serviceClient
+      .from('booth_size_presets')
+      .select('width_pct, height_pct')
+      .eq('id', body.assigned_preset_id)
+      .single()
+    if (preset) {
+      updates.map_w = preset.width_pct
+      updates.map_h = preset.height_pct
+    }
+  }
 
   const { error } = await serviceClient
     .from('exhibitors')
-    .update({
-      company_name: body.company_name,
-      description: body.description ?? null,
-      website: normalizeUrl(body.website),
-      email: body.email ?? null,
-      phone: body.phone ?? null,
-      booth_number: body.booth_number ?? null,
-      status: body.status,
-      assigned_preset_id: body.assigned_preset_id ?? null,
-    })
+    .update(updates)
     .eq('id', id)
 
   if (error) return NextResponse.json({ error: 'Kunde inte uppdatera utställare.' }, { status: 500 })
