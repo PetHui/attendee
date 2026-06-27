@@ -2,7 +2,6 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getImpersonatedOrgId } from '@/lib/impersonation'
 import FieldBuilder from '@/components/dashboard/field-builder'
-import Link from 'next/link'
 
 export default async function FieldsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -40,13 +39,7 @@ export default async function FieldsPage({ params }: { params: Promise<{ id: str
   return (
     <div className="p-8 max-w-2xl">
       <div className="mb-6">
-        <Link
-          href={`/dashboard/events/${event.id}`}
-          className="text-sm text-gray-500 hover:text-brand transition-colors"
-        >
-          ← Tillbaka till event
-        </Link>
-        <h1 className="text-2xl font-bold text-gray-900 mt-2">Anmälningsformulär</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Anmälningsformulär</h1>
         <p className="text-gray-500 mt-1">{event.title}</p>
       </div>
 

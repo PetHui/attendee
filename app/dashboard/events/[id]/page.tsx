@@ -56,13 +56,7 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
   return (
     <div className="p-8 max-w-2xl">
       <div className="mb-6">
-        <Link
-          href="/dashboard"
-          className="text-sm text-gray-500 hover:text-brand transition-colors"
-        >
-          ← Tillbaka till event
-        </Link>
-        <h1 className="text-2xl font-bold text-gray-900 mt-2">Redigera event</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Redigera event</h1>
         <p className="text-gray-500 mt-1">{event.title}</p>
       </div>
 

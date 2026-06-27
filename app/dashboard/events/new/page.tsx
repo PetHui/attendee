@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getImpersonatedOrgId } from '@/lib/impersonation'
 import EventForm from '@/components/dashboard/event-form'
-import Link from 'next/link'
 
 export default async function NewEventPage() {
   const supabase = await createClient()
@@ -36,13 +35,7 @@ export default async function NewEventPage() {
   return (
     <div className="p-8 max-w-2xl">
       <div className="mb-6">
-        <Link
-          href="/dashboard"
-          className="text-sm text-gray-500 hover:text-brand transition-colors"
-        >
-          ← Tillbaka till event
-        </Link>
-        <h1 className="text-2xl font-bold text-gray-900 mt-2">Skapa nytt event</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Skapa nytt event</h1>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">

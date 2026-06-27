@@ -51,13 +51,7 @@ export default async function ExhibitorsPage({ params }: { params: Promise<{ id:
   return (
     <div className="p-8">
       <div className="mb-6">
-        <Link
-          href={`/dashboard/events/${event.id}`}
-          className="text-sm text-gray-500 hover:text-brand transition-colors"
-        >
-          ← Tillbaka till event
-        </Link>
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Utställare</h1>
             <p className="text-gray-500 mt-1">{event.title}</p>
