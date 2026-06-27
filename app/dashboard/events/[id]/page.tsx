@@ -70,45 +70,6 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
         <EventForm event={event} organizationId={effectiveOrgId ?? ''} orgColor={orgColor} isSuperadmin={userData?.role === 'superadmin'} />
       </div>
 
-      {/* Quick links */}
-      <div className="grid grid-cols-5 gap-3 mb-4">
-        <Link
-          href={`/dashboard/events/${event.id}/fields`}
-          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
-        >
-          <p className="text-2xl mb-1">📋</p>
-          <p className="text-sm font-medium text-gray-700">Formulärfält</p>
-        </Link>
-        <Link
-          href={`/dashboard/events/${event.id}/participants`}
-          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
-        >
-          <p className="text-2xl mb-1">👥</p>
-          <p className="text-sm font-medium text-gray-700">Deltagare</p>
-        </Link>
-        <Link
-          href={`/checkin/${event.checkin_token}`}
-          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
-        >
-          <p className="text-2xl mb-1">📱</p>
-          <p className="text-sm font-medium text-gray-700">Incheckning</p>
-        </Link>
-        <Link
-          href={`/dashboard/events/${event.id}/exhibitors`}
-          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
-        >
-          <p className="text-2xl mb-1">🏢</p>
-          <p className="text-sm font-medium text-gray-700">Utställare</p>
-        </Link>
-        <Link
-          href={`/dashboard/events/${event.id}/map`}
-          className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:border-brand transition-colors"
-        >
-          <p className="text-2xl mb-1">🗺️</p>
-          <p className="text-sm font-medium text-gray-700">Hallkarta</p>
-        </Link>
-      </div>
-
       {orgSlug && (
         <div className="bg-gray-50 rounded-xl border border-gray-200 p-4">
           <p className="text-sm font-medium text-gray-700 mb-1">Publik anmälningslänk</p>
