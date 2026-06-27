@@ -11,7 +11,7 @@ const QrScanner = dynamic(() => import('./qr-scanner'), {
   loading: () => (
     <div className="flex items-center justify-center h-64 bg-gray-800 rounded-xl">
       <div className="text-center">
-        <div className="w-8 h-8 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <div className="w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
         <p className="text-gray-400 text-sm">Startar kamera...</p>
       </div>
     </div>
@@ -154,7 +154,7 @@ export default function CheckinClient({
               </p>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold text-indigo-400">{percentage}%</p>
+              <p className="text-3xl font-bold text-blue-400">{percentage}%</p>
               <p className="text-xs text-gray-500 mt-1">
                 {total - checkedIn} kvar
               </p>
@@ -162,7 +162,7 @@ export default function CheckinClient({
           </div>
           <div className="w-full bg-gray-800 rounded-full h-2.5">
             <div
-              className="bg-indigo-500 h-2.5 rounded-full transition-all duration-700 ease-out"
+              className="bg-blue-700 h-2.5 rounded-full transition-all duration-700 ease-out"
               style={{ width: `${percentage}%` }}
             />
           </div>
@@ -186,7 +186,7 @@ export default function CheckinClient({
 
         {isProcessing && !scanResult && !scanError && (
           <div className="bg-gray-900 rounded-2xl p-8 text-center border border-gray-800">
-            <div className="w-10 h-10 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-400 text-sm">Kontrollerar deltagare...</p>
           </div>
         )}

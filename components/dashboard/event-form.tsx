@@ -248,7 +248,7 @@ export default function EventForm({ event, organizationId, orgColor, isSuperadmi
               type="button"
               onClick={() => setUseCustomColor((v) => !v)}
               className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                useCustomColor ? 'bg-indigo-600' : 'bg-gray-200'
+                useCustomColor ? 'bg-blue-950' : 'bg-gray-200'
               }`}
             >
               <span
@@ -275,7 +275,7 @@ export default function EventForm({ event, organizationId, orgColor, isSuperadmi
                 onChange={handleHexChange}
                 maxLength={7}
                 placeholder="#172554"
-                className="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-800"
               />
               <div
                 className="flex-1 h-9 rounded-lg border border-gray-200 transition-colors"
