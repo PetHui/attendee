@@ -298,10 +298,14 @@ export default function ExhibitorPortal({
             <>
               <button
                 onClick={() => setTab('home')}
-                className="text-gray-500 hover:text-gray-800 transition-colors p-1 -ml-1"
+                className="flex items-center gap-1.5 text-sm font-medium text-brand hover:opacity-70 transition-opacity py-1 pr-2"
               >
-                ←
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Tillbaka
               </button>
+              <span className="text-gray-300">|</span>
               <h1 className="text-base font-semibold text-gray-900">{sectionLabels[tab as Exclude<Tab, 'home'>]}</h1>
             </>
           ) : (
