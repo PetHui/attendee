@@ -46,7 +46,7 @@ export default async function SuperadminPage() {
         </div>
         <Link
           href="/superadmin/organizations/new"
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+          className="bg-blue-950 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-900 transition-colors"
         >
           + Skapa organisation
         </Link>
@@ -86,7 +86,7 @@ export default async function SuperadminPage() {
                   <td className="px-6 py-4">
                     <Link
                       href={`/superadmin/organizations/${org.id}`}
-                      className="text-sm font-medium text-gray-900 hover:text-indigo-600 transition-colors"
+                      className="text-sm font-medium text-gray-900 hover:text-blue-950 transition-colors"
                     >
                       {org.name}
                     </Link>

@@ -60,7 +60,7 @@ export default async function OrganizationDetailPage({
             <span className="text-sm text-gray-500">{users?.length ?? 0} st</span>
             <Link
               href={`/superadmin/organizations/${org.id}/users/new`}
-              className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+              className="bg-blue-950 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-900 transition-colors"
             >
               + Lägg till användare
             </Link>
@@ -98,7 +98,7 @@ export default async function OrganizationDetailPage({
                     <p className="text-sm text-gray-600">{user.email}</p>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-950">
                       {ROLE_LABELS[user.role] ?? user.role}
                     </span>
                   </td>

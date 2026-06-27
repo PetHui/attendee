@@ -41,12 +41,12 @@ export default function OrgNameForm({ orgId, initialName }: { orgId: string; ini
               type="text"
               value={name}
               onChange={(e) => { setName(e.target.value); setSaved(false) }}
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
             />
             <button
               onClick={handleSave}
               disabled={saving || !name.trim() || name.trim() === initialName}
-              className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+              className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-950 hover:bg-blue-900 disabled:opacity-50 transition-colors"
             >
               {saving ? 'Sparar...' : 'Spara'}
             </button>

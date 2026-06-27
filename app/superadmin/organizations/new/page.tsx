@@ -93,7 +93,7 @@ export default function NewOrganizationPage() {
               onChange={handleChange}
               required
               placeholder="Exempelförbundet"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
             />
           </div>
 
@@ -109,7 +109,7 @@ export default function NewOrganizationPage() {
               required
               placeholder="exempelforbundet"
               pattern="[a-z0-9-]+"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800 font-mono"
             />
             <p className="text-xs text-gray-400 mt-1">Endast gemener, siffror och bindestreck.</p>
           </div>
@@ -130,7 +130,7 @@ export default function NewOrganizationPage() {
               onChange={handleChange}
               required
               placeholder="Anna Svensson"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
             />
           </div>
 
@@ -145,7 +145,7 @@ export default function NewOrganizationPage() {
               onChange={handleChange}
               required
               placeholder="anna@example.se"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
             />
           </div>
 
@@ -161,7 +161,7 @@ export default function NewOrganizationPage() {
               required
               minLength={8}
               placeholder="Minst 8 tecken"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
             />
           </div>
         </div>
@@ -176,7 +176,7 @@ export default function NewOrganizationPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-indigo-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-blue-950 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Skapar...' : 'Skapa organisation'}
           </button>

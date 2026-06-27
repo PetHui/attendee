@@ -10,7 +10,7 @@ export default function ImpersonateButton({ orgId }: { orgId: string }) {
     <button
       onClick={() => startTransition(() => impersonateOrg(orgId))}
       disabled={pending}
-      className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors disabled:opacity-50"
+      className="text-sm font-medium text-blue-950 hover:text-blue-900 transition-colors disabled:opacity-50"
     >
       {pending ? 'Laddar...' : 'Hantera →'}
     </button>
