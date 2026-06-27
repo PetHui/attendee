@@ -30,13 +30,9 @@ export default function Sidebar({
 
   useEffect(() => {
     if (!eventId) { setEventContext(null); return }
-    const supabase = createClient()
-    supabase
-      .from('events')
-      .select('title, checkin_token')
-      .eq('id', eventId)
-      .single()
-      .then(({ data }) => setEventContext(data ?? null))
+    fetch(`/api/events/${eventId}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => setEventContext(data ?? null))
   }, [eventId])
 
   async function handleSignOut() {
