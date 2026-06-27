@@ -41,12 +41,10 @@ export async function PUT(
   await serviceClient
     .from('exhibitors')
     .update({
-      company_name: body.company_name || exhibitor.company_name,
       description: body.description || null,
       website: normalizeUrl(body.website),
       email: body.email || null,
       phone: body.phone || null,
-      booth_number: body.booth_number || null,
       status: body.status ?? exhibitor.status,
     })
     .eq('id', exhibitor.id)

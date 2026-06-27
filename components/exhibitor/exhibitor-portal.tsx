@@ -298,7 +298,8 @@ export default function ExhibitorPortal({
         {tab === 'profil' && (
           <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
             <Field label="Företagsnamn">
-              <input type="text" value={info.company_name} onChange={(e) => setInfo((f) => ({ ...f, company_name: e.target.value }))} className={inputCls} />
+              <p className="px-3 py-2 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg">{info.company_name}</p>
+              <p className="text-xs text-gray-400 mt-1">Företagsnamnet hanteras av arrangören.</p>
             </Field>
             <Field label="Beskrivning">
               <textarea rows={4} value={info.description} onChange={(e) => setInfo((f) => ({ ...f, description: e.target.value }))} className={inputCls} placeholder="Berätta om ert företag..." />
@@ -314,7 +315,8 @@ export default function ExhibitorPortal({
                 <input type="tel" value={info.phone} onChange={(e) => setInfo((f) => ({ ...f, phone: e.target.value }))} className={inputCls} />
               </Field>
               <Field label="Monternummer">
-                <input type="text" value={info.booth_number} onChange={(e) => setInfo((f) => ({ ...f, booth_number: e.target.value }))} className={inputCls} placeholder="A12" />
+                <p className="px-3 py-2 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg">{info.booth_number || '–'}</p>
+                <p className="text-xs text-gray-400 mt-1">Monternumret hanteras av arrangören.</p>
               </Field>
             </div>
 
