@@ -64,7 +64,15 @@ interface Event {
   location: string | null
 }
 
-type Tab = 'profil' | 'erbjudande' | 'kontakter' | 'fakturering' | 'scanner'
+type Tab = 'home' | 'profil' | 'erbjudande' | 'kontakter' | 'fakturering' | 'scanner'
+
+const sectionLabels: Record<Exclude<Tab, 'home'>, string> = {
+  profil: 'Företagsprofil',
+  erbjudande: 'Erbjudande',
+  kontakter: 'Kontakter',
+  fakturering: 'Fakturering',
+  scanner: 'Skanna besökare',
+}
 
 export default function ExhibitorPortal({
   exhibitor: initial,
@@ -83,7 +91,7 @@ export default function ExhibitorPortal({
   editToken: string
   brandColor?: string
 }) {
-  const [tab, setTab] = useState<Tab>('profil')
+  const [tab, setTab] = useState<Tab>('home')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [status, setStatus] = useState(initial.status)
@@ -118,7 +126,6 @@ export default function ExhibitorPortal({
     }
   )
 
-  // QR scanner state
   const [scanResult, setScanResult] = useState<{ name?: string; alreadyRedeemed: boolean } | null>(null)
   const [scanError, setScanError] = useState<string | null>(null)
   const [isScanning, setIsScanning] = useState(false)
@@ -246,59 +253,112 @@ export default function ExhibitorPortal({
     [isScanning, editToken]
   )
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: 'profil', label: 'Profil' },
-    { key: 'erbjudande', label: 'Erbjudande' },
-    { key: 'kontakter', label: 'Kontakter' },
-    { key: 'fakturering', label: 'Fakturering' },
-    { key: 'scanner', label: 'Skanna besökare' },
+  const homeCards = [
+    {
+      key: 'profil' as Tab,
+      icon: '🏢',
+      label: 'Företagsprofil',
+      description: 'Beskrivning, webbplats och kontaktuppgifter',
+      badge: status === 'draft' ? 'Utkast' : null,
+    },
+    {
+      key: 'erbjudande' as Tab,
+      icon: '🎁',
+      label: 'Erbjudande',
+      description: offer.title ? offer.title : 'Inget erbjudande tillagt ännu',
+      badge: redemptions.length > 0 ? `${redemptions.length} inlösta` : null,
+    },
+    {
+      key: 'kontakter' as Tab,
+      icon: '👥',
+      label: 'Kontakter',
+      description: contacts.length > 0 ? `${contacts.length} kontaktperson${contacts.length > 1 ? 'er' : ''}` : 'Inga kontakter tillagda',
+    },
+    {
+      key: 'fakturering' as Tab,
+      icon: '🧾',
+      label: 'Fakturering',
+      description: 'Fakturaadress och referens',
+    },
+    {
+      key: 'scanner' as Tab,
+      icon: '📱',
+      label: 'Skanna besökare',
+      description: 'Lös in erbjudanden via QR-kod',
+    },
   ]
 
   return (
     <div className="min-h-screen bg-gray-50" style={{ '--brand': brandColor } as React.CSSProperties}>
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-2xl mx-auto px-4 py-5">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">{info.company_name}</h1>
-              <p className="text-sm text-gray-500 mt-0.5">{event.title}</p>
-            </div>
-            <span
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium mt-1 ${
-                status === 'published'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-amber-100 text-amber-700'
-              }`}
-            >
-              {status === 'published' ? 'Publicerad' : 'Utkast'}
-            </span>
-          </div>
-        </div>
 
-        {/* Flikar */}
-        <div className="max-w-2xl mx-auto px-4 flex gap-1 overflow-x-auto">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
-                tab === t.key
-                  ? 'text-brand border-brand'
-                  : 'text-gray-500 border-transparent hover:text-gray-700'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-lg mx-auto px-4 h-14 flex items-center gap-3">
+          {tab !== 'home' ? (
+            <>
+              <button
+                onClick={() => setTab('home')}
+                className="text-gray-500 hover:text-gray-800 transition-colors p-1 -ml-1"
+              >
+                ←
+              </button>
+              <h1 className="text-base font-semibold text-gray-900">{sectionLabels[tab as Exclude<Tab, 'home'>]}</h1>
+            </>
+          ) : (
+            <h1 className="text-base font-semibold" style={{ color: brandColor }}>{event.title}</h1>
+          )}
         </div>
       </div>
 
-      {/* Innehåll */}
-      <div className="max-w-2xl mx-auto px-4 py-6">
+      <div className="max-w-lg mx-auto px-4 pb-10">
+
+        {/* Hemskärm */}
+        {tab === 'home' && (
+          <>
+            {/* Välkomstbanner */}
+            <div className="rounded-2xl mt-4 mb-5 p-5 text-white" style={{ backgroundColor: brandColor }}>
+              <p className="text-xl font-bold">{info.company_name}</p>
+              <p className="text-sm opacity-80 mt-1">
+                {event.title}
+                {info.booth_number && ` · Monter ${info.booth_number}`}
+              </p>
+              {status === 'draft' && (
+                <span className="inline-block mt-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">Utkast — ej publicerad</span>
+              )}
+            </div>
+
+            {/* Navigationskort */}
+            <div className="space-y-3">
+              {homeCards.map((card) => (
+                <button
+                  key={card.key}
+                  onClick={() => setTab(card.key)}
+                  className="w-full bg-white rounded-2xl border border-gray-100 p-4 flex items-center gap-4 text-left hover:border-gray-300 active:scale-[0.98] transition-all shadow-sm"
+                >
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 bg-gray-50">
+                    {card.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-900 text-sm">{card.label}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 truncate">{card.description}</p>
+                  </div>
+                  {card.badge && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-brand/10 text-brand font-medium shrink-0">
+                      {card.badge}
+                    </span>
+                  )}
+                  <svg className="w-4 h-4 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
         {/* Profil */}
         {tab === 'profil' && (
-          <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+          <div className="mt-4 bg-white rounded-2xl border border-gray-100 p-5 space-y-4 shadow-sm">
             <Field label="Företagsnamn">
               <p className="px-3 py-2 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg">{info.company_name}</p>
               <p className="text-xs text-gray-400 mt-1">Företagsnamnet hanteras av arrangören.</p>
@@ -306,36 +366,25 @@ export default function ExhibitorPortal({
             <Field label="Beskrivning">
               <textarea rows={4} value={info.description} onChange={(e) => setInfo((f) => ({ ...f, description: e.target.value }))} className={inputCls} placeholder="Berätta om ert företag..." />
             </Field>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Webbplats">
-                <input type="url" value={info.website} onChange={(e) => setInfo((f) => ({ ...f, website: e.target.value }))} className={inputCls} placeholder="https://..." />
-              </Field>
-              <Field label="E-post">
-                <input type="email" value={info.email} onChange={(e) => setInfo((f) => ({ ...f, email: e.target.value }))} className={inputCls} />
-              </Field>
-              <Field label="Telefon">
-                <input type="tel" value={info.phone} onChange={(e) => setInfo((f) => ({ ...f, phone: e.target.value }))} className={inputCls} />
-              </Field>
-              <Field label="Monternummer">
-                <p className="px-3 py-2 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg">{info.booth_number || '–'}</p>
-                <p className="text-xs text-gray-400 mt-1">Monternumret hanteras av arrangören.</p>
-              </Field>
-            </div>
-
+            <Field label="Webbplats">
+              <input type="url" value={info.website} onChange={(e) => setInfo((f) => ({ ...f, website: e.target.value }))} className={inputCls} placeholder="https://..." />
+            </Field>
+            <Field label="E-post">
+              <input type="email" value={info.email} onChange={(e) => setInfo((f) => ({ ...f, email: e.target.value }))} className={inputCls} />
+            </Field>
+            <Field label="Telefon">
+              <input type="tel" value={info.phone} onChange={(e) => setInfo((f) => ({ ...f, phone: e.target.value }))} className={inputCls} />
+            </Field>
+            <Field label="Monternummer">
+              <p className="px-3 py-2 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg">{info.booth_number || '–'}</p>
+              <p className="text-xs text-gray-400 mt-1">Monternumret hanteras av arrangören.</p>
+            </Field>
             <div className="flex items-center gap-3 pt-2 border-t border-gray-100">
-              <button
-                onClick={() => saveInfo()}
-                disabled={saving}
-                className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
-              >
+              <button onClick={() => saveInfo()} disabled={saving} className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity">
                 {saving ? 'Sparar...' : status === 'published' ? 'Spara' : 'Spara utkast'}
               </button>
               {status !== 'published' && (
-                <button
-                  onClick={() => saveInfo('published')}
-                  disabled={saving}
-                  className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
-                >
+                <button onClick={() => saveInfo('published')} disabled={saving} className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity">
                   Publicera
                 </button>
               )}
@@ -346,35 +395,19 @@ export default function ExhibitorPortal({
 
         {/* Erbjudande */}
         {tab === 'erbjudande' && (
-          <div className="space-y-4">
-            <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+          <div className="mt-4 space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4 shadow-sm">
               <p className="text-sm text-gray-500">
                 Erbjudanden visas tydligt i utställarkatalogen och lockar besökare till er monter.
               </p>
               <Field label="Rubrik">
-                <input
-                  type="text"
-                  value={offer.title}
-                  onChange={(e) => setOffer((f) => ({ ...f, title: e.target.value }))}
-                  className={inputCls}
-                  placeholder="Ex: 10% rabatt på alla produkter under mässan"
-                />
+                <input type="text" value={offer.title} onChange={(e) => setOffer((f) => ({ ...f, title: e.target.value }))} className={inputCls} placeholder="Ex: 10% rabatt på alla produkter under mässan" />
               </Field>
               <Field label="Beskrivning">
-                <textarea
-                  rows={4}
-                  value={offer.description ?? ''}
-                  onChange={(e) => setOffer((f) => ({ ...f, description: e.target.value }))}
-                  className={inputCls}
-                  placeholder="Beskriv ert erbjudande mer detaljerat..."
-                />
+                <textarea rows={4} value={offer.description ?? ''} onChange={(e) => setOffer((f) => ({ ...f, description: e.target.value }))} className={inputCls} placeholder="Beskriv ert erbjudande mer detaljerat..." />
               </Field>
               <div className="flex items-center gap-3 pt-2 border-t border-gray-100">
-                <button
-                  onClick={saveOffer}
-                  disabled={saving}
-                  className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
-                >
+                <button onClick={saveOffer} disabled={saving} className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity">
                   {saving ? 'Sparar...' : 'Spara erbjudande'}
                 </button>
                 {saved && <span className="text-sm text-green-600">Sparat!</span>}
@@ -382,21 +415,14 @@ export default function ExhibitorPortal({
             </div>
 
             {redemptions.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center justify-between mb-3">
-                  <p className="font-medium text-gray-900">
-                    Inlösta erbjudanden <span className="text-brand">({redemptions.length})</span>
-                  </p>
-                  <button
-                    onClick={exportCSV}
-                    className="text-xs text-brand hover:opacity-70 font-medium"
-                  >
-                    Exportera CSV
-                  </button>
+                  <p className="font-medium text-gray-900">Inlösta erbjudanden <span className="text-brand">({redemptions.length})</span></p>
+                  <button onClick={exportCSV} className="text-xs text-brand hover:opacity-70 font-medium">Exportera CSV</button>
                 </div>
                 <div className="space-y-2">
                   {redemptions.map((r) => (
-                    <div key={r.id} className="flex justify-between text-sm text-gray-600 border-b border-gray-100 pb-2 last:border-0 last:pb-0">
+                    <div key={r.id} className="flex justify-between text-sm border-b border-gray-100 pb-2 last:border-0 last:pb-0">
                       <span className="text-xs text-gray-700">{r.name ?? `${r.participant_id.slice(0, 12)}…`}</span>
                       <span className="text-xs text-gray-400">
                         {new Date(r.redeemed_at).toLocaleString('sv-SE', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' })}
@@ -411,9 +437,9 @@ export default function ExhibitorPortal({
 
         {/* Kontakter */}
         {tab === 'kontakter' && (
-          <div className="space-y-4">
+          <div className="mt-4 space-y-4">
             {contacts.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+              <div className="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-100 shadow-sm">
                 {contacts.map((c) => (
                   <div key={c.id} className="flex items-center justify-between px-4 py-3">
                     <div>
@@ -427,24 +453,22 @@ export default function ExhibitorPortal({
                 ))}
               </div>
             )}
-            <form onSubmit={addContact} className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
+            <form onSubmit={addContact} className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3 shadow-sm">
               <p className="font-medium text-sm text-gray-900">Lägg till kontaktperson</p>
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Namn" required>
-                  <input type="text" required value={newContact.name} onChange={(e) => setNewContact((f) => ({ ...f, name: e.target.value }))} className={inputCls} />
-                </Field>
-                <Field label="Roll">
-                  <input type="text" value={newContact.role} onChange={(e) => setNewContact((f) => ({ ...f, role: e.target.value }))} className={inputCls} placeholder="VD, Säljare..." />
-                </Field>
-                <Field label="E-post">
-                  <input type="email" value={newContact.email} onChange={(e) => setNewContact((f) => ({ ...f, email: e.target.value }))} className={inputCls} />
-                </Field>
-                <Field label="Telefon">
-                  <input type="tel" value={newContact.phone} onChange={(e) => setNewContact((f) => ({ ...f, phone: e.target.value }))} className={inputCls} />
-                </Field>
-              </div>
-              <button type="submit" disabled={saving} className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity">
-                Lägg till
+              <Field label="Namn" required>
+                <input type="text" required value={newContact.name} onChange={(e) => setNewContact((f) => ({ ...f, name: e.target.value }))} className={inputCls} />
+              </Field>
+              <Field label="Roll">
+                <input type="text" value={newContact.role} onChange={(e) => setNewContact((f) => ({ ...f, role: e.target.value }))} className={inputCls} placeholder="VD, Säljare..." />
+              </Field>
+              <Field label="E-post">
+                <input type="email" value={newContact.email} onChange={(e) => setNewContact((f) => ({ ...f, email: e.target.value }))} className={inputCls} />
+              </Field>
+              <Field label="Telefon">
+                <input type="tel" value={newContact.phone} onChange={(e) => setNewContact((f) => ({ ...f, phone: e.target.value }))} className={inputCls} />
+              </Field>
+              <button type="submit" disabled={saving} className="w-full px-4 py-2.5 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity">
+                Lägg till kontakt
               </button>
             </form>
           </div>
@@ -452,21 +476,19 @@ export default function ExhibitorPortal({
 
         {/* Fakturering */}
         {tab === 'fakturering' && (
-          <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Företagsnamn (faktura)">
-                <input type="text" value={billing.company_name ?? ''} onChange={(e) => setBilling((f) => ({ ...f, company_name: e.target.value }))} className={inputCls} />
-              </Field>
-              <Field label="Org.nummer">
-                <input type="text" value={billing.org_number ?? ''} onChange={(e) => setBilling((f) => ({ ...f, org_number: e.target.value }))} className={inputCls} placeholder="556xxx-xxxx" />
-              </Field>
-              <Field label="Momsreg.nr">
-                <input type="text" value={billing.vat_number ?? ''} onChange={(e) => setBilling((f) => ({ ...f, vat_number: e.target.value }))} className={inputCls} />
-              </Field>
-              <Field label="Faktura-e-post">
-                <input type="email" value={billing.billing_email ?? ''} onChange={(e) => setBilling((f) => ({ ...f, billing_email: e.target.value }))} className={inputCls} />
-              </Field>
-            </div>
+          <div className="mt-4 bg-white rounded-2xl border border-gray-100 p-5 space-y-4 shadow-sm">
+            <Field label="Företagsnamn (faktura)">
+              <input type="text" value={billing.company_name ?? ''} onChange={(e) => setBilling((f) => ({ ...f, company_name: e.target.value }))} className={inputCls} />
+            </Field>
+            <Field label="Org.nummer">
+              <input type="text" value={billing.org_number ?? ''} onChange={(e) => setBilling((f) => ({ ...f, org_number: e.target.value }))} className={inputCls} placeholder="556xxx-xxxx" />
+            </Field>
+            <Field label="Momsreg.nr">
+              <input type="text" value={billing.vat_number ?? ''} onChange={(e) => setBilling((f) => ({ ...f, vat_number: e.target.value }))} className={inputCls} />
+            </Field>
+            <Field label="Faktura-e-post">
+              <input type="email" value={billing.billing_email ?? ''} onChange={(e) => setBilling((f) => ({ ...f, billing_email: e.target.value }))} className={inputCls} />
+            </Field>
             <Field label="Fakturaadress">
               <textarea rows={3} value={billing.billing_address ?? ''} onChange={(e) => setBilling((f) => ({ ...f, billing_address: e.target.value }))} className={inputCls} />
             </Field>
@@ -484,22 +506,21 @@ export default function ExhibitorPortal({
 
         {/* QR Scanner */}
         {tab === 'scanner' && (
-          <div className="space-y-4">
+          <div className="mt-4 space-y-4">
             {!offer.id && (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-sm text-amber-800">
                 Du behöver lägga till ett erbjudande innan du kan skanna besökare.
               </div>
             )}
             {offer.id && (
               <>
-                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
                   <div className="px-4 py-3 border-b border-gray-100">
                     <p className="text-sm font-medium text-gray-700">Skanna besökarens QR-kod</p>
                     <p className="text-xs text-gray-400 mt-0.5">Erbjudande: {offer.title}</p>
                   </div>
                   <div className="p-4">
                     {showScanner && <QrScanner onScan={handleScan} />}
-
                     {isScanning && !scanResult && !scanError && (
                       <div className="flex items-center justify-center h-48">
                         <div className="text-center">
@@ -508,7 +529,6 @@ export default function ExhibitorPortal({
                         </div>
                       </div>
                     )}
-
                     {scanResult && (
                       <div className={`rounded-xl p-6 text-center ${scanResult.alreadyRedeemed ? 'bg-amber-50 border border-amber-200' : 'bg-green-50 border border-green-200'}`}>
                         <p className="text-4xl mb-2">{scanResult.alreadyRedeemed ? '⚠️' : '✅'}</p>
@@ -519,7 +539,6 @@ export default function ExhibitorPortal({
                         <p className="text-xs text-gray-400 mt-3">Kameran återupptas om 4 sekunder...</p>
                       </div>
                     )}
-
                     {scanError && (
                       <div className="rounded-xl p-6 text-center bg-red-50 border border-red-200">
                         <p className="text-4xl mb-2">❌</p>
@@ -530,18 +549,13 @@ export default function ExhibitorPortal({
                   </div>
                 </div>
 
-                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-medium text-gray-700">
                       Inlösta idag <span className="text-brand">({redemptions.length})</span>
                     </p>
                     {redemptions.length > 0 && (
-                      <button
-                        onClick={exportCSV}
-                        className="text-xs text-brand hover:opacity-70 font-medium"
-                      >
-                        Exportera CSV
-                      </button>
+                      <button onClick={exportCSV} className="text-xs text-brand hover:opacity-70 font-medium">Exportera CSV</button>
                     )}
                   </div>
                   {redemptions.length === 0 ? (
