@@ -107,6 +107,9 @@ export default function MapEditor({
 
   const placed = exhibitors.filter((e) => e.map_x != null)
   const unplaced = exhibitors.filter((e) => e.map_x == null)
+  const filteredUnplaced = selectedPresetId
+    ? unplaced.filter((e) => e.assigned_preset_id === selectedPresetId)
+    : unplaced
   const selectedPreset = presets.find((p) => p.id === selectedPresetId) ?? null
 
   const selectedBooth = selection?.kind === 'booth' ? exhibitors.find((e) => e.id === selection.id) ?? null : null
@@ -470,16 +473,29 @@ export default function MapEditor({
           )}
         </div>
 
-        {/* Aktiv monteringstorlek */}
+        {/* Filtrera / placera med montertyp */}
         {presets.length > 0 && (
           <div className="border-b border-gray-200 px-4 py-3">
-            <p className="text-xs text-gray-500 mb-2">Placerar med storlek:</p>
+            <p className="text-xs text-gray-500 mb-2">Filtrera ej utplacerade:</p>
             <div className="flex flex-wrap gap-1.5">
-              {presets.map((p) => (
-                <button key={p.id} onClick={() => setSelectedPresetId(p.id)} className={`text-xs px-2 py-1 rounded border transition-all ${selectedPresetId === p.id ? 'border-brand text-brand font-medium' : 'border-gray-300 text-gray-600 hover:border-gray-400'}`}>
-                  {p.name}
-                </button>
-              ))}
+              <button
+                onClick={() => setSelectedPresetId(null)}
+                className={`text-xs px-2 py-1 rounded border transition-all ${!selectedPresetId ? 'border-brand text-brand font-medium' : 'border-gray-300 text-gray-600 hover:border-gray-400'}`}
+              >
+                Alla ({unplaced.length})
+              </button>
+              {presets.map((p) => {
+                const count = unplaced.filter((e) => e.assigned_preset_id === p.id).length
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedPresetId(selectedPresetId === p.id ? null : p.id)}
+                    className={`text-xs px-2 py-1 rounded border transition-all ${selectedPresetId === p.id ? 'border-brand text-brand font-medium' : 'border-gray-300 text-gray-600 hover:border-gray-400'}`}
+                  >
+                    {p.name} ({count})
+                  </button>
+                )
+              })}
             </div>
           </div>
         )}
@@ -488,9 +504,14 @@ export default function MapEditor({
         <div className="flex-1 overflow-y-auto">
           {unplaced.length > 0 && (
             <div className="px-4 py-3">
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Ej utplacerade ({unplaced.length})</p>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                Ej utplacerade ({selectedPresetId && filteredUnplaced.length !== unplaced.length ? `${filteredUnplaced.length} av ${unplaced.length}` : unplaced.length})
+              </p>
               <div className="space-y-1">
-                {unplaced.map((e) => (
+                {filteredUnplaced.length === 0 && (
+                  <p className="text-xs text-gray-400 italic">Inga utställare med denna montertyp.</p>
+                )}
+                {filteredUnplaced.map((e) => (
                   <button key={e.id} onClick={() => setSelection(selection?.kind === 'booth' && selection.id === e.id ? null : { kind: 'booth', id: e.id })}
                     className={`w-full text-left text-xs px-3 py-2 rounded border transition-all ${selection?.kind === 'booth' && selection.id === e.id ? 'border-brand bg-brand/5 text-brand font-medium' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'}`}>
                     <span className="block font-medium truncate">{e.company_name}</span>
