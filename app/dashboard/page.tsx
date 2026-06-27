@@ -142,12 +142,6 @@ export default async function DashboardPage() {
                       <div className="flex items-center gap-1 justify-end flex-wrap">
                         <EventStatusButton eventId={event.id} status={event.status} />
                         <Link
-                          href={`/dashboard/events/${event.id}`}
-                          className="text-xs text-gray-600 hover:text-brand px-2 py-1 rounded hover:bg-brand-subtle transition-colors"
-                        >
-                          Redigera
-                        </Link>
-                        <Link
                           href={`/dashboard/events/${event.id}/fields`}
                           className="text-xs text-gray-600 hover:text-brand px-2 py-1 rounded hover:bg-brand-subtle transition-colors"
                         >
