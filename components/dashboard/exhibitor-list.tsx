@@ -215,7 +215,9 @@ export default function ExhibitorList({
               {filtered.map((ex) => (
                 <tr key={ex.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-5 py-3.5">
-                    <p className="font-medium text-gray-900">{ex.company_name}</p>
+                    <Link href={`/dashboard/events/${eventId}/exhibitors/${ex.id}`} className="font-medium text-gray-900 hover:text-brand transition-colors">
+                      {ex.company_name}
+                    </Link>
                     {ex.email && <p className="text-xs text-gray-400 mt-0.5">{ex.email}</p>}
                   </td>
                   <td className="px-4 py-3.5 text-gray-500">{ex.booth_number ?? '–'}</td>
@@ -260,12 +262,6 @@ export default function ExhibitorList({
                           ✉️ Skicka
                         </button>
                       )}
-                      <Link
-                        href={`/dashboard/events/${eventId}/exhibitors/${ex.id}`}
-                        className="text-xs text-brand hover:opacity-70 px-2 py-1 rounded hover:bg-brand/10 transition-colors"
-                      >
-                        Redigera
-                      </Link>
                       <button
                         onClick={() => handleDelete(ex.id)}
                         className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded hover:bg-red-50 transition-colors"
