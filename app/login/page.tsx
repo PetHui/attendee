@@ -50,10 +50,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-indigo-600">Attendee</h1>
+          <h1 className="text-4xl font-bold text-blue-950">Attendee</h1>
           <p className="text-gray-500 mt-2">Eventhantering &amp; deltagarregistrering</p>
         </div>
 
@@ -75,7 +75,7 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     autoComplete="email"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent"
                     placeholder="du@example.se"
                   />
                 </div>
@@ -87,21 +87,21 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     autoComplete="current-password"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent"
                     placeholder="••••••••"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-indigo-600 text-white rounded-lg py-2.5 px-4 font-medium text-sm hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full bg-blue-950 text-white rounded-lg py-2.5 px-4 font-medium text-sm hover:bg-blue-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? 'Loggar in...' : 'Logga in'}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setMode('reset'); setError(null) }}
-                  className="w-full text-sm text-indigo-600 hover:text-indigo-800 text-center"
+                  className="w-full text-sm text-blue-950 hover:text-blue-900 text-center"
                 >
                   Glömt lösenord?
                 </button>
@@ -116,7 +116,7 @@ export default function LoginPage() {
               </p>
               <button
                 onClick={() => { setMode('login'); setResetSent(false) }}
-                className="text-sm text-indigo-600 hover:text-indigo-800"
+                className="text-sm text-blue-950 hover:text-blue-900"
               >
                 ← Tillbaka till inloggning
               </button>
@@ -141,21 +141,21 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     autoComplete="email"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent"
                     placeholder="du@example.se"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-indigo-600 text-white rounded-lg py-2.5 px-4 font-medium text-sm hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full bg-blue-950 text-white rounded-lg py-2.5 px-4 font-medium text-sm hover:bg-blue-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? 'Skickar...' : 'Skicka återställningslänk'}
                 </button>
                 <button
                   type="button"
                   onClick={() => { setMode('login'); setError(null) }}
-                  className="w-full text-sm text-indigo-600 hover:text-indigo-800 text-center"
+                  className="w-full text-sm text-blue-950 hover:text-blue-900 text-center"
                 >
                   ← Tillbaka till inloggning
                 </button>
