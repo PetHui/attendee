@@ -51,10 +51,6 @@ export default function Sidebar({
     { href: `/dashboard/events/${eventId}/participants`, label: 'Deltagare',     icon: '👥', exact: false },
     { href: `/dashboard/events/${eventId}/exhibitors`,   label: 'Utställare',    icon: '🏢', exact: false },
     { href: `/dashboard/events/${eventId}/map`,          label: 'Hallkarta',     icon: '🗺️', exact: false },
-    ...(eventContext?.checkin_token
-      ? [{ href: `/checkin/${eventContext.checkin_token}`, label: 'Incheckning', icon: '📱', exact: false }]
-      : []
-    ),
   ] : []
 
   function isEventItemActive(item: { href: string; exact: boolean }) {
