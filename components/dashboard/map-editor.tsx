@@ -98,6 +98,8 @@ export default function MapEditor({
   const [saving, setSaving] = useState(false)
   const [newPreset, setNewPreset] = useState({ name: '', width_pct: 10, height_pct: 8, color: '#bfdbfe' })
   const [addingPreset, setAddingPreset] = useState(false)
+  const [editingPresetId, setEditingPresetId] = useState<string | null>(null)
+  const [editPreset, setEditPreset] = useState({ name: '', width_pct: 10, height_pct: 8, color: '#bfdbfe' })
   const [newElementLabel, setNewElementLabel] = useState('')
   const [addingElement, setAddingElement] = useState(false)
   const mapRef = useRef<HTMLDivElement>(null)
@@ -339,6 +341,21 @@ export default function MapEditor({
     if (selectedPresetId === presetId) setSelectedPresetId(presets.find((p) => p.id !== presetId)?.id ?? null)
   }
 
+  const startEditPreset = (p: Preset) => {
+    setEditingPresetId(p.id)
+    setEditPreset({ name: p.name, width_pct: p.width_pct, height_pct: p.height_pct, color: p.color })
+  }
+
+  const saveEditPreset = async (presetId: string) => {
+    await fetch(`/api/events/${eventId}/booth-presets/${presetId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editPreset),
+    })
+    setPresets((prev) => prev.map((p) => p.id === presetId ? { ...p, ...editPreset } : p))
+    setEditingPresetId(null)
+  }
+
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
@@ -385,10 +402,43 @@ export default function MapEditor({
           {presetsOpen && (
             <div className="px-4 pb-4 space-y-2">
               {presets.map((p) => (
-                <div key={p.id} className="flex items-center gap-2 text-xs">
-                  <span className="w-4 h-4 rounded flex-shrink-0 border border-gray-300" style={{ backgroundColor: p.color }} />
-                  <span className="flex-1 truncate">{p.name} ({p.width_pct}×{p.height_pct}%)</span>
-                  <button onClick={() => deletePreset(p.id)} className="text-gray-400 hover:text-red-500">×</button>
+                <div key={p.id} className="text-xs">
+                  {editingPresetId === p.id ? (
+                    <div className="space-y-1.5 border border-brand/30 rounded p-2 bg-brand/5">
+                      <input
+                        type="text"
+                        value={editPreset.name}
+                        onChange={(e) => setEditPreset((v) => ({ ...v, name: e.target.value }))}
+                        className="w-full border border-gray-300 rounded px-2 py-1"
+                        placeholder="Namn"
+                      />
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <label className="block text-gray-400 mb-0.5">Bredd %</label>
+                          <input type="number" value={editPreset.width_pct} onChange={(e) => setEditPreset((v) => ({ ...v, width_pct: parseFloat(e.target.value) || 1 }))} className="w-full border border-gray-300 rounded px-2 py-1" />
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-gray-400 mb-0.5">Höjd %</label>
+                          <input type="number" value={editPreset.height_pct} onChange={(e) => setEditPreset((v) => ({ ...v, height_pct: parseFloat(e.target.value) || 1 }))} className="w-full border border-gray-300 rounded px-2 py-1" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <label className="text-gray-500">Färg</label>
+                        <input type="color" value={editPreset.color} onChange={(e) => setEditPreset((v) => ({ ...v, color: e.target.value }))} className="h-6 w-10 rounded border border-gray-300 cursor-pointer" />
+                      </div>
+                      <div className="flex gap-2 pt-0.5">
+                        <button onClick={() => saveEditPreset(p.id)} disabled={!editPreset.name} className="flex-1 bg-brand text-white rounded px-2 py-1 disabled:opacity-50">Spara</button>
+                        <button onClick={() => setEditingPresetId(null)} className="flex-1 border border-gray-300 rounded px-2 py-1">Avbryt</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded flex-shrink-0 border border-gray-300" style={{ backgroundColor: p.color }} />
+                      <span className="flex-1 truncate">{p.name} ({p.width_pct}×{p.height_pct}%)</span>
+                      <button onClick={() => startEditPreset(p)} className="text-gray-400 hover:text-brand">✎</button>
+                      <button onClick={() => deletePreset(p.id)} className="text-gray-400 hover:text-red-500">×</button>
+                    </div>
+                  )}
                 </div>
               ))}
               {addingPreset ? (
