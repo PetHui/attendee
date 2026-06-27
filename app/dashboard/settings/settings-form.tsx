@@ -158,7 +158,7 @@ export default function SettingsForm({
               value={hexInput}
               onChange={handleHexChange}
               maxLength={7}
-              placeholder="#6366f1"
+              placeholder="#172554"
               className="w-32 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <div

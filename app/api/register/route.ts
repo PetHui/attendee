@@ -110,7 +110,7 @@ export async function POST(request: Request) {
       ? `${appUrl}/${org.slug}/${eventId}/catalog?token=${participant.qr_code}`
       : undefined
 
-  const brandColor = event.primary_color ?? org?.primary_color ?? '#6366f1'
+  const brandColor = event.primary_color ?? org?.primary_color ?? '#172554'
 
   // Send confirmation email (non-blocking fail)
   if (emailValue) {

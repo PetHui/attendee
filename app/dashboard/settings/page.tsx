@@ -30,7 +30,7 @@ export default async function SettingsPage() {
   return (
     <SettingsForm
       orgId={orgId}
-      initialColor={org?.primary_color ?? '#6366f1'}
+      initialColor={org?.primary_color ?? '#172554'}
       initialName={org?.name ?? ''}
       isSuperadmin={isSuperadmin}
     />

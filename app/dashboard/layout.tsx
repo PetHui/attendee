@@ -45,7 +45,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
 
-  const brand = effectiveUserData?.organization?.primary_color ?? '#6366f1'
+  const brand = effectiveUserData?.organization?.primary_color ?? '#172554'
 
   return (
     <DashboardShell

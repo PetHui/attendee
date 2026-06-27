@@ -55,7 +55,7 @@ export default async function ExhibitorDetailPage({
 
   if (!exhibitor) notFound()
 
-  const brand = org.primary_color ?? '#6366f1'
+  const brand = org.primary_color ?? '#172554'
   const backUrl = `/${orgSlug}/${eventId}/catalog?token=${token}`
   const mapUrl = event?.map_image_url && exhibitor.map_x != null
     ? `/${orgSlug}/${eventId}/catalog?token=${token}&tab=karta&highlight=${exhibitorId}`

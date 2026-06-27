@@ -55,8 +55,8 @@ export default function EventForm({ event, organizationId, orgColor, isSuperadmi
   const [emailFooterNote, setEmailFooterNote] = useState(event?.email_footer_note ?? '')
 
   const [useCustomColor, setUseCustomColor] = useState(!!event?.primary_color)
-  const [color, setColor] = useState(event?.primary_color ?? orgColor ?? '#6366f1')
-  const [hexInput, setHexInput] = useState(event?.primary_color ?? orgColor ?? '#6366f1')
+  const [color, setColor] = useState(event?.primary_color ?? orgColor ?? '#172554')
+  const [hexInput, setHexInput] = useState(event?.primary_color ?? orgColor ?? '#172554')
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -118,7 +118,7 @@ export default function EventForm({ event, organizationId, orgColor, isSuperadmi
     router.refresh()
   }
 
-  const previewColor = useCustomColor && isValidHex(color) ? color : (orgColor ?? '#6366f1')
+  const previewColor = useCustomColor && isValidHex(color) ? color : (orgColor ?? '#172554')
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -265,7 +265,7 @@ export default function EventForm({ event, organizationId, orgColor, isSuperadmi
             <div className="flex items-center gap-3">
               <input
                 type="color"
-                value={isValidHex(color) ? color : '#6366f1'}
+                value={isValidHex(color) ? color : '#172554'}
                 onChange={handlePickerChange}
                 className="w-10 h-9 rounded-lg border border-gray-300 cursor-pointer p-0.5 bg-white"
               />
@@ -274,7 +274,7 @@ export default function EventForm({ event, organizationId, orgColor, isSuperadmi
                 value={hexInput}
                 onChange={handleHexChange}
                 maxLength={7}
-                placeholder="#6366f1"
+                placeholder="#172554"
                 className="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <div

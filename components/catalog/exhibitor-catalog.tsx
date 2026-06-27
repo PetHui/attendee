@@ -217,7 +217,7 @@ export default function ExhibitorCatalog({
   initialTab?: 'lista' | 'karta'
   highlightExhibitorId?: string
 }) {
-  const brand = org.primary_color ?? '#6366f1'
+  const brand = org.primary_color ?? '#172554'
   const [query, setQuery] = useState('')
   const [qrOpen, setQrOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'lista' | 'karta'>(initialTab ?? 'lista')
