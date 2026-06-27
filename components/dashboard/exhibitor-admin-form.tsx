@@ -28,6 +28,13 @@ interface Offer {
   redemptions: { id: string; participant_id: string; redeemed_at: string }[]
 }
 
+interface Preset {
+  id: string
+  name: string
+  width_pct: number
+  height_pct: number
+}
+
 interface Exhibitor {
   id: string
   company_name: string
@@ -37,6 +44,7 @@ interface Exhibitor {
   phone: string | null
   booth_number: string | null
   status: 'draft' | 'published'
+  assigned_preset_id: string | null
 }
 
 type Tab = 'grundinfo' | 'kontakter' | 'fakturering' | 'erbjudande'
@@ -46,11 +54,13 @@ export default function ExhibitorAdminForm({
   contacts: initialContacts,
   billing: initialBilling,
   offers: initialOffers,
+  presets,
 }: {
   exhibitor: Exhibitor
   contacts: Contact[]
   billing: Billing | null
   offers: Offer[]
+  presets: Preset[]
 }) {
   const [tab, setTab] = useState<Tab>('grundinfo')
   const [saving, setSaving] = useState(false)
@@ -65,6 +75,7 @@ export default function ExhibitorAdminForm({
     phone: initial.phone ?? '',
     booth_number: initial.booth_number ?? '',
     status: initial.status,
+    assigned_preset_id: initial.assigned_preset_id ?? '',
   })
 
   // Kontakter
@@ -93,7 +104,10 @@ export default function ExhibitorAdminForm({
     const res = await fetch(`/api/exhibitors/${initial.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(info),
+      body: JSON.stringify({
+        ...info,
+        assigned_preset_id: info.assigned_preset_id || null,
+      }),
     })
     setSaving(false)
     if (res.ok) flash()
@@ -248,6 +262,22 @@ export default function ExhibitorAdminForm({
                 </select>
               </Field>
             </div>
+            {presets.length > 0 && (
+              <Field label="Montertyp">
+                <select
+                  value={info.assigned_preset_id}
+                  onChange={(e) => setInfo((f) => ({ ...f, assigned_preset_id: e.target.value }))}
+                  className={inputCls}
+                >
+                  <option value="">– Ingen tilldelad –</option>
+                  {presets.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.width_pct}×{p.height_pct}%)
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            )}
             <SaveBar saving={saving} saved={saved} onSave={saveInfo} />
           </div>
         )}

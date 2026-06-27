@@ -34,7 +34,7 @@ export default async function MapPage({ params }: { params: Promise<{ id: string
   const [{ data: exhibitors }, { data: presets }, { data: elements }] = await Promise.all([
     serviceClient
       .from('exhibitors')
-      .select('id, company_name, booth_number, map_x, map_y, map_w, map_h, map_color')
+      .select('id, company_name, booth_number, map_x, map_y, map_w, map_h, map_color, assigned_preset_id')
       .eq('event_id', id)
       .order('sort_order')
       .order('created_at'),

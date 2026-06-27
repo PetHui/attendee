@@ -12,6 +12,7 @@ interface Exhibitor {
   map_w: number | null
   map_h: number | null
   map_color: string | null
+  assigned_preset_id: string | null
 }
 
 interface Preset {
@@ -135,7 +136,9 @@ export default function MapEditor({
   // ── Placera utställare via kartklick ────────────────────────────────────────
 
   const placeExhibitor = useCallback((exhibitorId: string, x: number, y: number) => {
-    const preset = selectedPreset
+    const base = exhibitors.find((e) => e.id === exhibitorId)!
+    const assignedPreset = base.assigned_preset_id ? presets.find((p) => p.id === base.assigned_preset_id) : null
+    const preset = assignedPreset ?? selectedPreset
     const w = preset?.width_pct ?? 10
     const h = preset?.height_pct ?? 8
     setExhibitors((prev) =>
@@ -145,9 +148,8 @@ export default function MapEditor({
           : e
       )
     )
-    const base = exhibitors.find((e) => e.id === exhibitorId)!
     savePosition({ ...base, map_x: Math.max(0, Math.min(100 - w, x)), map_y: Math.max(0, Math.min(100 - h, y)), map_w: w, map_h: h, map_color: base.map_color ?? preset?.color ?? DEFAULT_COLOR })
-  }, [selectedPreset, exhibitors, savePosition])
+  }, [selectedPreset, presets, exhibitors, savePosition])
 
   const handleMapClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!mapRef.current || dragState) return
@@ -157,9 +159,12 @@ export default function MapEditor({
     const rect = mapRef.current.getBoundingClientRect()
     const x = ((e.clientX - rect.left) / rect.width) * 100
     const y = ((e.clientY - rect.top) / rect.height) * 100
-    placeExhibitor(selection.id, x - (selectedPreset?.width_pct ?? 10) / 2, y - (selectedPreset?.height_pct ?? 8) / 2)
+    const placingExhibitor = exhibitors.find((e) => e.id === selection.id)
+    const assignedPreset = placingExhibitor?.assigned_preset_id ? presets.find((p) => p.id === placingExhibitor.assigned_preset_id) : null
+    const activePreset = assignedPreset ?? selectedPreset
+    placeExhibitor(selection.id, x - (activePreset?.width_pct ?? 10) / 2, y - (activePreset?.height_pct ?? 8) / 2)
     setSelection(null)
-  }, [dragState, placingNew, selection, placeExhibitor, selectedPreset])
+  }, [dragState, placingNew, selection, placeExhibitor, selectedPreset, exhibitors, presets])
 
   // ── Drag ────────────────────────────────────────────────────────────────────
 
@@ -439,7 +444,11 @@ export default function MapEditor({
                   <button key={e.id} onClick={() => setSelection(selection?.kind === 'booth' && selection.id === e.id ? null : { kind: 'booth', id: e.id })}
                     className={`w-full text-left text-xs px-3 py-2 rounded border transition-all ${selection?.kind === 'booth' && selection.id === e.id ? 'border-brand bg-brand/5 text-brand font-medium' : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'}`}>
                     <span className="block font-medium truncate">{e.company_name}</span>
-                    {e.booth_number && <span className="text-gray-400">Monter {e.booth_number}</span>}
+                    <span className="text-gray-400">
+                      {e.booth_number && `Monter ${e.booth_number}`}
+                      {e.booth_number && e.assigned_preset_id && ' · '}
+                      {e.assigned_preset_id && (presets.find((p) => p.id === e.assigned_preset_id)?.name ?? '')}
+                    </span>
                   </button>
                 ))}
               </div>

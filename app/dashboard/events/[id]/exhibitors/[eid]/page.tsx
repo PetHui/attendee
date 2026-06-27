@@ -46,10 +46,11 @@ export default async function ExhibitorAdminPage({
 
   if (!exhibitor) notFound()
 
-  const [{ data: contacts }, { data: billing }, { data: offers }] = await Promise.all([
+  const [{ data: contacts }, { data: billing }, { data: offers }, { data: presets }] = await Promise.all([
     serviceClient.from('exhibitor_contacts').select('*').eq('exhibitor_id', eid).order('is_primary', { ascending: false }),
     serviceClient.from('exhibitor_billing').select('*').eq('exhibitor_id', eid).maybeSingle(),
     serviceClient.from('exhibitor_offers').select('*, redemptions:offer_redemptions(id, participant_id, redeemed_at)').eq('exhibitor_id', eid),
+    serviceClient.from('booth_size_presets').select('id, name, width_pct, height_pct').eq('event_id', id).order('sort_order'),
   ])
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
@@ -101,6 +102,7 @@ export default async function ExhibitorAdminPage({
         contacts={contacts ?? []}
         billing={billing ?? null}
         offers={offers ?? []}
+        presets={presets ?? []}
       />
     </div>
   )

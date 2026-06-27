@@ -62,6 +62,7 @@ export async function PUT(
       phone: body.phone ?? null,
       booth_number: body.booth_number ?? null,
       status: body.status,
+      assigned_preset_id: body.assigned_preset_id ?? null,
     })
     .eq('id', id)
 
