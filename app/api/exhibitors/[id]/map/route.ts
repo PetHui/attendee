@@ -40,15 +40,20 @@ export async function PATCH(
 
   const body = await request.json()
 
+  const updates: Record<string, unknown> = {
+    map_x: body.map_x ?? null,
+    map_y: body.map_y ?? null,
+    map_w: body.map_w ?? null,
+    map_h: body.map_h ?? null,
+    map_color: body.map_color ?? null,
+  }
+  if ('assigned_preset_id' in body) {
+    updates.assigned_preset_id = body.assigned_preset_id ?? null
+  }
+
   const { error } = await serviceClient
     .from('exhibitors')
-    .update({
-      map_x: body.map_x ?? null,
-      map_y: body.map_y ?? null,
-      map_w: body.map_w ?? null,
-      map_h: body.map_h ?? null,
-      map_color: body.map_color ?? null,
-    })
+    .update(updates)
     .eq('id', id)
 
   if (error) return NextResponse.json({ error: 'Kunde inte spara position.' }, { status: 500 })

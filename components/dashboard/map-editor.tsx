@@ -612,9 +612,18 @@ export default function MapEditor({
                 {presets.map((p) => (
                   <button key={p.id}
                     onClick={async () => {
-                      const updated = { ...selectedBooth, map_w: p.width_pct, map_h: p.height_pct }
+                      const updated = { ...selectedBooth, map_w: p.width_pct, map_h: p.height_pct, assigned_preset_id: p.id }
                       setExhibitors((prev) => prev.map((e) => e.id === selectedBooth.id ? updated : e))
-                      await savePosition(updated)
+                      await fetch(`/api/exhibitors/${selectedBooth.id}/map`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          map_x: updated.map_x, map_y: updated.map_y,
+                          map_w: updated.map_w, map_h: updated.map_h,
+                          map_color: updated.map_color,
+                          assigned_preset_id: p.id,
+                        }),
+                      })
                     }}
                     className="w-full text-xs text-left px-2 py-1.5 rounded border border-gray-200 hover:border-brand hover:text-brand"
                   >
