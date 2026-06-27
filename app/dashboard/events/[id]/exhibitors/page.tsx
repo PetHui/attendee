@@ -32,12 +32,19 @@ export default async function ExhibitorsPage({ params }: { params: Promise<{ id:
   if (!event) notFound()
 
   const serviceClient = createServiceClient()
-  const { data: exhibitors } = await serviceClient
-    .from('exhibitors')
-    .select('*, offers:exhibitor_offers(id)')
-    .eq('event_id', id)
-    .order('sort_order')
-    .order('created_at')
+  const [{ data: exhibitors }, { data: presets }] = await Promise.all([
+    serviceClient
+      .from('exhibitors')
+      .select('*, offers:exhibitor_offers(id)')
+      .eq('event_id', id)
+      .order('sort_order')
+      .order('created_at'),
+    serviceClient
+      .from('booth_size_presets')
+      .select('id, name')
+      .eq('event_id', id)
+      .order('sort_order'),
+  ])
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
@@ -61,6 +68,7 @@ export default async function ExhibitorsPage({ params }: { params: Promise<{ id:
       <ExhibitorList
         eventId={id}
         exhibitors={exhibitors ?? []}
+        presets={presets ?? []}
         appUrl={appUrl}
       />
     </div>

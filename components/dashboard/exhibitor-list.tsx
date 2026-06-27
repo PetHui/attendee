@@ -10,16 +10,24 @@ interface ExhibitorRow {
   booth_number: string | null
   status: 'draft' | 'published'
   edit_token: string
+  assigned_preset_id: string | null
   offers: { id: string }[]
+}
+
+interface Preset {
+  id: string
+  name: string
 }
 
 export default function ExhibitorList({
   eventId,
   exhibitors: initial,
+  presets,
   appUrl,
 }: {
   eventId: string
   exhibitors: ExhibitorRow[]
+  presets: Preset[]
   appUrl: string
 }) {
   const [exhibitors, setExhibitors] = useState(initial)
@@ -164,6 +172,7 @@ export default function ExhibitorList({
               <tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left px-5 py-3 font-medium text-gray-600">Företag</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Monter</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600">Montertyp</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Erbjudande</th>
                 <th className="text-right px-5 py-3 font-medium text-gray-600">Åtgärder</th>
@@ -177,6 +186,9 @@ export default function ExhibitorList({
                     {ex.email && <p className="text-xs text-gray-400 mt-0.5">{ex.email}</p>}
                   </td>
                   <td className="px-4 py-3.5 text-gray-500">{ex.booth_number ?? '–'}</td>
+                  <td className="px-4 py-3.5 text-gray-500">
+                    {presets.find((p) => p.id === ex.assigned_preset_id)?.name ?? '–'}
+                  </td>
                   <td className="px-4 py-3.5">
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
