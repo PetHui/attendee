@@ -117,7 +117,7 @@ export default function Sidebar({
             {/* Eventnamn */}
             {!collapsed && (
               <div className="px-3 mb-2">
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest truncate">
+                <p className="text-xs font-semibold text-gray-700 truncate">
                   {eventContext?.title ?? '…'}
                 </p>
               </div>
