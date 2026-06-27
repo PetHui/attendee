@@ -31,6 +31,7 @@ export default function ExhibitorList({
   appUrl: string
 }) {
   const [exhibitors, setExhibitors] = useState(initial)
+  const [filterPresetId, setFilterPresetId] = useState<string>('')
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ company_name: '', email: '', booth_number: '' })
@@ -159,13 +160,45 @@ export default function ExhibitorList({
         </form>
       )}
 
-      {/* Lista */}
-      {exhibitors.length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
-          <p className="text-4xl mb-3">🏢</p>
-          <p className="text-gray-500">Inga utställare ännu. Lägg till den första!</p>
+      {/* Filter */}
+      {exhibitors.length > 0 && presets.length > 0 && (
+        <div className="flex items-center gap-3 mb-4">
+          <label className="text-sm text-gray-600 whitespace-nowrap">Filtrera på montertyp:</label>
+          <select
+            value={filterPresetId}
+            onChange={(e) => setFilterPresetId(e.target.value)}
+            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
+          >
+            <option value="">Alla ({exhibitors.length})</option>
+            {presets.map((p) => {
+              const count = exhibitors.filter((ex) => ex.assigned_preset_id === p.id).length
+              return <option key={p.id} value={p.id}>{p.name} ({count})</option>
+            })}
+            <option value="none">
+              Ingen tilldelad ({exhibitors.filter((ex) => !ex.assigned_preset_id).length})
+            </option>
+          </select>
+          {filterPresetId && (
+            <button onClick={() => setFilterPresetId('')} className="text-sm text-gray-400 hover:text-gray-600">
+              Rensa filter
+            </button>
+          )}
         </div>
-      ) : (
+      )}
+
+      {/* Lista */}
+      {(() => {
+        const filtered = filterPresetId === 'none'
+          ? exhibitors.filter((ex) => !ex.assigned_preset_id)
+          : filterPresetId
+            ? exhibitors.filter((ex) => ex.assigned_preset_id === filterPresetId)
+            : exhibitors
+        return filtered.length === 0 ? (
+          <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
+            <p className="text-4xl mb-3">🏢</p>
+            <p className="text-gray-500">{exhibitors.length === 0 ? 'Inga utställare ännu. Lägg till den första!' : 'Inga utställare matchar filtret.'}</p>
+          </div>
+        ) : (
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
@@ -179,7 +212,7 @@ export default function ExhibitorList({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {exhibitors.map((ex) => (
+              {filtered.map((ex) => (
                 <tr key={ex.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-5 py-3.5">
                     <p className="font-medium text-gray-900">{ex.company_name}</p>
@@ -246,7 +279,8 @@ export default function ExhibitorList({
             </tbody>
           </table>
         </div>
-      )}
+        )
+      })()}
     </div>
   )
 }
