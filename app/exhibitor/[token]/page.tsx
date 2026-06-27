@@ -12,7 +12,7 @@ export default async function ExhibitorPortalPage({
 
   const { data: exhibitor } = await serviceClient
     .from('exhibitors')
-    .select('*, event:events(id, title, starts_at, ends_at, location)')
+    .select('*, event:events(id, title, starts_at, ends_at, location, primary_color, organization:organizations(primary_color))')
     .eq('edit_token', token)
     .single()
 
@@ -60,14 +60,18 @@ export default async function ExhibitorPortalPage({
     })),
   }))
 
+  const ev = (exhibitor as any).event
+  const brandColor = ev?.primary_color ?? ev?.organization?.primary_color ?? '#172554'
+
   return (
     <ExhibitorPortal
       exhibitor={exhibitor}
-      event={(exhibitor as any).event}
+      event={ev}
       contacts={contacts ?? []}
       billing={billing ?? null}
       offers={enrichedOffers}
       editToken={token}
+      brandColor={brandColor}
     />
   )
 }

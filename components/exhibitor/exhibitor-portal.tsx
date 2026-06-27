@@ -73,6 +73,7 @@ export default function ExhibitorPortal({
   billing: initialBilling,
   offers: initialOffers,
   editToken,
+  brandColor = '#172554',
 }: {
   exhibitor: Exhibitor
   event: Event
@@ -80,6 +81,7 @@ export default function ExhibitorPortal({
   billing: Billing | null
   offers: Offer[]
   editToken: string
+  brandColor?: string
 }) {
   const [tab, setTab] = useState<Tab>('profil')
   const [saving, setSaving] = useState(false)
@@ -253,7 +255,7 @@ export default function ExhibitorPortal({
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" style={{ '--brand': brandColor } as React.CSSProperties}>
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-2xl mx-auto px-4 py-5">
@@ -282,7 +284,7 @@ export default function ExhibitorPortal({
               onClick={() => setTab(t.key)}
               className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
                 tab === t.key
-                  ? 'text-blue-950 border-blue-950'
+                  ? 'text-brand border-brand'
                   : 'text-gray-500 border-transparent hover:text-gray-700'
               }`}
             >
@@ -332,7 +334,7 @@ export default function ExhibitorPortal({
                 <button
                   onClick={() => saveInfo('published')}
                   disabled={saving}
-                  className="px-4 py-2 bg-blue-950 text-white rounded-lg text-sm font-medium hover:bg-blue-900 disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   Publicera
                 </button>
@@ -371,7 +373,7 @@ export default function ExhibitorPortal({
                 <button
                   onClick={saveOffer}
                   disabled={saving}
-                  className="px-4 py-2 bg-blue-950 text-white rounded-lg text-sm font-medium hover:bg-blue-900 disabled:opacity-50 transition-colors"
+                  className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   {saving ? 'Sparar...' : 'Spara erbjudande'}
                 </button>
@@ -383,11 +385,11 @@ export default function ExhibitorPortal({
               <div className="bg-white rounded-xl border border-gray-200 p-5">
                 <div className="flex items-center justify-between mb-3">
                   <p className="font-medium text-gray-900">
-                    Inlösta erbjudanden <span className="text-blue-950">({redemptions.length})</span>
+                    Inlösta erbjudanden <span className="text-brand">({redemptions.length})</span>
                   </p>
                   <button
                     onClick={exportCSV}
-                    className="text-xs text-blue-950 hover:text-blue-900 font-medium"
+                    className="text-xs text-brand hover:opacity-70 font-medium"
                   >
                     Exportera CSV
                   </button>
@@ -441,7 +443,7 @@ export default function ExhibitorPortal({
                   <input type="tel" value={newContact.phone} onChange={(e) => setNewContact((f) => ({ ...f, phone: e.target.value }))} className={inputCls} />
                 </Field>
               </div>
-              <button type="submit" disabled={saving} className="px-4 py-2 bg-blue-950 text-white rounded-lg text-sm font-medium hover:bg-blue-900 disabled:opacity-50 transition-colors">
+              <button type="submit" disabled={saving} className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity">
                 Lägg till
               </button>
             </form>
@@ -472,7 +474,7 @@ export default function ExhibitorPortal({
               <input type="text" value={billing.billing_reference ?? ''} onChange={(e) => setBilling((f) => ({ ...f, billing_reference: e.target.value }))} className={inputCls} />
             </Field>
             <div className="flex items-center gap-3 pt-2 border-t border-gray-100">
-              <button onClick={saveBilling} disabled={saving} className="px-4 py-2 bg-blue-950 text-white rounded-lg text-sm font-medium hover:bg-blue-900 disabled:opacity-50 transition-colors">
+              <button onClick={saveBilling} disabled={saving} className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity">
                 {saving ? 'Sparar...' : 'Spara'}
               </button>
               {saved && <span className="text-sm text-green-600">Sparat!</span>}
@@ -501,7 +503,7 @@ export default function ExhibitorPortal({
                     {isScanning && !scanResult && !scanError && (
                       <div className="flex items-center justify-center h-48">
                         <div className="text-center">
-                          <div className="w-8 h-8 border-2 border-blue-950 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                          <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                           <p className="text-gray-500 text-sm">Kontrollerar...</p>
                         </div>
                       </div>
@@ -531,12 +533,12 @@ export default function ExhibitorPortal({
                 <div className="bg-white rounded-xl border border-gray-200 p-4">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-medium text-gray-700">
-                      Inlösta idag <span className="text-blue-950">({redemptions.length})</span>
+                      Inlösta idag <span className="text-brand">({redemptions.length})</span>
                     </p>
                     {redemptions.length > 0 && (
                       <button
                         onClick={exportCSV}
-                        className="text-xs text-blue-950 hover:text-blue-900 font-medium"
+                        className="text-xs text-brand hover:opacity-70 font-medium"
                       >
                         Exportera CSV
                       </button>
