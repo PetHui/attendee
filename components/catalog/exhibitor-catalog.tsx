@@ -350,28 +350,6 @@ export default function ExhibitorCatalog({
               </a>
             </div>
 
-            {/* Suddig förhandsgranskning */}
-            {exhibitors.length > 0 && (
-              <div className="mt-6 relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-50/70 to-gray-50 z-10 rounded-xl" />
-                <div className="opacity-40 pointer-events-none select-none bg-white border border-gray-200 rounded-xl overflow-hidden">
-                  {exhibitors.slice(0, 4).map((ex, i) => (
-                    <div key={ex.id} className={`flex items-center px-4 py-3 ${i > 0 ? 'border-t border-gray-100' : ''}`}>
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0">
-                        {ex.company_name.slice(0, 2).toUpperCase()}
-                      </div>
-                      <div className="ml-3 flex-1">
-                        <span className="text-sm font-medium text-gray-900">{ex.company_name}</span>
-                        {ex.booth_number && <span className="text-xs text-gray-400 ml-2">Monter {ex.booth_number}</span>}
-                      </div>
-                      {ex.exhibitor_offers.length > 0 && (
-                        <span className="text-xs text-amber-600 font-medium">🎁</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         ) : (
           /* Upplåst katalog */
