@@ -21,10 +21,20 @@ export default function ParticipantsTable({
   const [checkingIn, setCheckingIn] = useState<string | null>(null)
   const [localParticipants, setLocalParticipants] = useState(participants)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [editing, setEditing] = useState(false)
+  const [editValues, setEditValues] = useState<Record<string, string>>({})
+  const [saving, setSaving] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [resendStatus, setResendStatus] = useState<'success' | 'error' | null>(null)
 
   const selectedParticipant = selectedId
     ? localParticipants.find((p) => p.id === selectedId) ?? null
     : null
+
+  useEffect(() => {
+    setEditing(false)
+    setResendStatus(null)
+  }, [selectedId])
 
   // Kolumner som visas i tabellen – de 3 första fälten
   const tableFields = fields.slice(0, 3)
@@ -90,6 +100,54 @@ export default function ParticipantsTable({
       )
     }
     setCheckingIn(null)
+  }
+
+  function startEditing(p: ParticipantWithValues) {
+    const values: Record<string, string> = {}
+    for (const f of fields) {
+      const fv = p.field_values.find((v) => v.field_id === f.id)
+      values[f.id] = fv?.value ?? ''
+    }
+    setEditValues(values)
+    setEditing(true)
+  }
+
+  async function handleSave() {
+    if (!selectedParticipant) return
+    setSaving(true)
+    const res = await fetch(`/api/participants/${selectedParticipant.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fieldValues: editValues }),
+    })
+    if (res.ok) {
+      setLocalParticipants((prev) =>
+        prev.map((p) =>
+          p.id === selectedParticipant.id
+            ? {
+                ...p,
+                field_values: p.field_values.map((fv) => ({
+                  ...fv,
+                  value: editValues[fv.field_id] ?? fv.value,
+                })),
+              }
+            : p
+        )
+      )
+      setEditing(false)
+    }
+    setSaving(false)
+  }
+
+  async function handleResendEmail() {
+    if (!selectedParticipant) return
+    setResending(true)
+    setResendStatus(null)
+    const res = await fetch(`/api/participants/${selectedParticipant.id}/resend-email`, {
+      method: 'POST',
+    })
+    setResendStatus(res.ok ? 'success' : 'error')
+    setResending(false)
   }
 
   const filtered = localParticipants.filter((p) => {
@@ -304,19 +362,38 @@ export default function ParticipantsTable({
             {/* Panel-header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">Deltagare</p>
+                <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">
+                  {editing ? 'Redigera deltagare' : 'Deltagare'}
+                </p>
                 <p className="text-sm text-gray-500 mt-0.5">
                   Anmäld {new Date(selectedParticipant.created_at).toLocaleDateString('sv-SE')}
                 </p>
               </div>
-              <button
-                onClick={() => setSelectedId(null)}
-                className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              <div className="flex items-center gap-2">
+                {editing ? (
+                  <button
+                    onClick={() => setEditing(false)}
+                    className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Avbryt
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => startEditing(selectedParticipant)}
+                    className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Redigera
+                  </button>
+                )}
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Incheckningsstatus */}
@@ -362,24 +439,99 @@ export default function ParticipantsTable({
             </div>
 
             {/* Formulärsvar */}
-            <div className="flex-1 overflow-y-auto px-6 py-4">
+            <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col">
               <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-4">
                 Anmälningssvar
               </p>
-              <div className="space-y-4">
-                {fields.map((f) => {
-                  const fv = selectedParticipant.field_values.find((v) => v.field_id === f.id)
-                  const value = f.field_type === 'checkbox'
-                    ? fv?.value === 'true' ? 'Ja' : 'Nej'
-                    : fv?.value ?? '–'
-                  return (
-                    <div key={f.id}>
-                      <p className="text-xs font-medium text-gray-500 mb-0.5">{f.label}</p>
-                      <p className="text-sm text-gray-900">{value}</p>
-                    </div>
-                  )
-                })}
-              </div>
+
+              {editing ? (
+                <>
+                  <div className="space-y-4 flex-1">
+                    {fields.map((f) => (
+                      <div key={f.id}>
+                        <label className="text-xs font-medium text-gray-500 mb-1 block">
+                          {f.label}
+                        </label>
+                        {f.field_type === 'checkbox' ? (
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={editValues[f.id] === 'true'}
+                              onChange={(e) =>
+                                setEditValues((v) => ({ ...v, [f.id]: e.target.checked ? 'true' : 'false' }))
+                              }
+                              className="w-4 h-4 rounded border-gray-300"
+                            />
+                            <span className="text-sm text-gray-700">Ja</span>
+                          </label>
+                        ) : f.field_type === 'select' ? (
+                          <select
+                            value={editValues[f.id] ?? ''}
+                            onChange={(e) => setEditValues((v) => ({ ...v, [f.id]: e.target.value }))}
+                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30"
+                          >
+                            <option value="">– Välj –</option>
+                            {(f.options ?? []).map((opt) => (
+                              <option key={opt} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type="text"
+                            value={editValues[f.id] ?? ''}
+                            onChange={(e) => setEditValues((v) => ({ ...v, [f.id]: e.target.value }))}
+                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="mt-6 w-full py-2.5 text-sm font-semibold text-white bg-brand rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                  >
+                    {saving ? 'Sparar...' : 'Spara ändringar'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-4 flex-1">
+                    {fields.map((f) => {
+                      const fv = selectedParticipant.field_values.find((v) => v.field_id === f.id)
+                      const value = f.field_type === 'checkbox'
+                        ? fv?.value === 'true' ? 'Ja' : 'Nej'
+                        : fv?.value ?? '–'
+                      return (
+                        <div key={f.id}>
+                          <p className="text-xs font-medium text-gray-500 mb-0.5">{f.label}</p>
+                          <p className="text-sm text-gray-900">{value}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  <div className="mt-6 border-t border-gray-100 pt-4">
+                    {resendStatus === 'success' && (
+                      <p className="text-xs text-green-600 text-center mb-3">
+                        Bekräftelsen skickades!
+                      </p>
+                    )}
+                    {resendStatus === 'error' && (
+                      <p className="text-xs text-red-500 text-center mb-3">
+                        Kunde inte skicka — kontrollera att deltagaren har en e-postadress.
+                      </p>
+                    )}
+                    <button
+                      onClick={handleResendEmail}
+                      disabled={resending}
+                      className="w-full py-2.5 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {resending ? 'Skickar...' : 'Skicka om bekräftelse'}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </>
         )}
