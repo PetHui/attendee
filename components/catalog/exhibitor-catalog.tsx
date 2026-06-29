@@ -185,7 +185,7 @@ function MapView({
         {/* Popup-overlay inuti kartan (mobil + desktop) */}
         {active && (
           <div
-            className="absolute top-1/2 -translate-y-1/2 left-0 right-0 z-20 p-2"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 p-2 w-11/12 md:w-72"
             onMouseEnter={cancelHoverClear}
             onMouseLeave={scheduleHoverClear}
             onClick={(ev) => ev.stopPropagation()}
