@@ -92,7 +92,7 @@ function MapView({
   const active = activeId ? placed.find((e) => e.id === activeId) : null
 
   function scheduleHoverClear() {
-    hoverTimeout.current = setTimeout(() => setHoveredId(null), 150)
+    hoverTimeout.current = setTimeout(() => setHoveredId(null), 400)
   }
   function cancelHoverClear() {
     clearTimeout(hoverTimeout.current)
