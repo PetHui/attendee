@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendConfirmationEmail, sendConfirmationEmailWithCatalog } from '@/lib/email'
+import { getImpersonatedOrgId } from '@/lib/impersonation'
 
 export async function POST(
   _request: Request,
@@ -14,23 +15,36 @@ export async function POST(
 
   const { data: userData } = await authSupabase
     .from('users')
-    .select('organization_id')
+    .select('organization_id, role')
     .eq('id', user.id)
     .single()
   if (!userData) return NextResponse.json({ error: 'Användare hittades inte' }, { status: 403 })
+
+  const effectiveOrgId =
+    userData.role === 'superadmin'
+      ? await getImpersonatedOrgId()
+      : userData.organization_id
+
+  if (!effectiveOrgId) return NextResponse.json({ error: 'Ingen aktiv organisation.' }, { status: 403 })
 
   const service = createServiceClient()
 
   const { data: participant } = await service
     .from('participants')
-    .select('id, event_id, qr_code, event:events(organization_id)')
+    .select('id, event_id, qr_code')
     .eq('id', id)
     .single()
 
   if (!participant) return NextResponse.json({ error: 'Deltagare hittades inte.' }, { status: 404 })
-  if ((participant.event as any)?.organization_id !== userData.organization_id) {
-    return NextResponse.json({ error: 'Obehörig åtkomst.' }, { status: 403 })
-  }
+
+  const { data: eventCheck } = await service
+    .from('events')
+    .select('id')
+    .eq('id', participant.event_id)
+    .eq('organization_id', effectiveOrgId)
+    .single()
+
+  if (!eventCheck) return NextResponse.json({ error: 'Obehörig åtkomst.' }, { status: 403 })
 
   const [{ data: fieldValues }, { data: event }, { data: fields }] = await Promise.all([
     service.from('participant_field_values').select('field_id, value').eq('participant_id', id),

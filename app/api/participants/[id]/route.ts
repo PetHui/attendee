@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { getImpersonatedOrgId } from '@/lib/impersonation'
 
 export async function PUT(
   request: Request,
@@ -13,23 +14,37 @@ export async function PUT(
 
   const { data: userData } = await authSupabase
     .from('users')
-    .select('organization_id')
+    .select('organization_id, role')
     .eq('id', user.id)
     .single()
   if (!userData) return NextResponse.json({ error: 'Användare hittades inte' }, { status: 403 })
 
+  const effectiveOrgId =
+    userData.role === 'superadmin'
+      ? await getImpersonatedOrgId()
+      : userData.organization_id
+
+  if (!effectiveOrgId) return NextResponse.json({ error: 'Ingen aktiv organisation.' }, { status: 403 })
+
   const service = createServiceClient()
 
+  // Verify participant belongs to the effective org
   const { data: participant } = await service
     .from('participants')
-    .select('id, event:events(organization_id)')
+    .select('id, event_id')
     .eq('id', id)
     .single()
 
   if (!participant) return NextResponse.json({ error: 'Deltagare hittades inte.' }, { status: 404 })
-  if ((participant.event as any)?.organization_id !== userData.organization_id) {
-    return NextResponse.json({ error: 'Obehörig åtkomst.' }, { status: 403 })
-  }
+
+  const { data: event } = await service
+    .from('events')
+    .select('id')
+    .eq('id', participant.event_id)
+    .eq('organization_id', effectiveOrgId)
+    .single()
+
+  if (!event) return NextResponse.json({ error: 'Obehörig åtkomst.' }, { status: 403 })
 
   const { fieldValues } = await request.json() as { fieldValues: Record<string, string> }
   const fieldIds = Object.keys(fieldValues)
