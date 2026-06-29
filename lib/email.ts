@@ -100,7 +100,7 @@ export async function sendConfirmationEmail({
                     <p style="font-size:13px;color:#9ca3af;margin:0 0 16px;">${qrInstruction}</p>
                     <img src="${qrBase64}" alt="QR-kod" width="200" height="200" style="display:block;margin:0 auto;border-radius:4px;" />
                     <p style="font-size:26px;font-weight:700;letter-spacing:0.15em;color:#111827;margin:16px 0 4px;">${qrCode.slice(0, 6).toUpperCase()}</p>
-                    <p style="font-size:11px;color:#9ca3af;margin:0 0 8px;">Manuell inträdes­kod</p>
+                    <p style="font-size:11px;color:#9ca3af;margin:0 0 8px;">Manuell kod</p>
                     <p style="font-size:12px;color:#9ca3af;margin:0;">Spara detta e-postmeddelande eller skärmdumpa QR-koden.</p>
                   </td>
                 </tr>
@@ -207,7 +207,7 @@ export async function sendConfirmationEmailWithCatalog({
                     <p style="font-size:13px;color:#9ca3af;margin:0 0 16px;">${qrInstruction}</p>
                     <img src="${qrBase64}" alt="QR-kod" width="200" height="200" style="display:block;margin:0 auto;border-radius:4px;" />
                     <p style="font-size:26px;font-weight:700;letter-spacing:0.15em;color:#111827;margin:16px 0 4px;">${rest.qrCode.slice(0, 6).toUpperCase()}</p>
-                    <p style="font-size:11px;color:#9ca3af;margin:0 0 8px;">Manuell inträdes­kod</p>
+                    <p style="font-size:11px;color:#9ca3af;margin:0 0 8px;">Manuell kod</p>
                     <p style="font-size:12px;color:#9ca3af;margin:0;">Spara detta e-postmeddelande eller skärmdumpa QR-koden.</p>
                   </td>
                 </tr>
