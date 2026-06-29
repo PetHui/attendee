@@ -182,10 +182,12 @@ function MapView({
           </div>
         ))}
 
-        {/* Mobil: popup-overlay inuti kartan */}
+        {/* Popup-overlay inuti kartan (mobil + desktop) */}
         {active && (
           <div
-            className="md:hidden absolute bottom-0 left-0 right-0 z-20 p-2"
+            className="absolute bottom-0 left-0 right-0 z-20 p-2"
+            onMouseEnter={cancelHoverClear}
+            onMouseLeave={scheduleHoverClear}
             onClick={(ev) => ev.stopPropagation()}
           >
             <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-gray-100 p-3">
@@ -225,37 +227,6 @@ function MapView({
           </div>
         )}
       </div>
-
-      {/* Desktop: popup under kartan */}
-      {active && (
-        <div
-          className="hidden md:block bg-white border border-gray-200 rounded-xl p-4 shadow-sm"
-          onMouseEnter={cancelHoverClear}
-          onMouseLeave={scheduleHoverClear}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-semibold text-gray-900">{active.company_name}</p>
-              {active.booth_number && (
-                <p className="text-xs text-gray-500 mt-0.5">Monter {active.booth_number}</p>
-              )}
-              {active.description && (
-                <p className="text-sm text-gray-600 mt-2 line-clamp-2">{active.description}</p>
-              )}
-              {active.exhibitor_offers.length > 0 && (
-                <p className="text-xs text-amber-600 font-medium mt-2">🎁 {active.exhibitor_offers.length} erbjudande{active.exhibitor_offers.length > 1 ? 'n' : ''}</p>
-              )}
-            </div>
-            <a
-              href={`/${org.slug}/${eventId}/catalog/${active.id}${token ? `?token=${token}` : ''}`}
-              style={{ backgroundColor: brand }}
-              className="shrink-0 text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:opacity-90"
-            >
-              Mer info →
-            </a>
-          </div>
-        </div>
-      )}
 
       {placed.length === 0 && (
         <div className="text-center py-8 text-gray-400 text-sm">
