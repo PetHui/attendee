@@ -128,7 +128,8 @@ function MapView({
               onMouseLeave={scheduleHoverClear}
               onClick={(ev) => {
                 ev.stopPropagation()
-                if (!hoveredId) {
+                const pointerType = (ev.nativeEvent as PointerEvent).pointerType
+                if (pointerType !== 'mouse') {
                   ev.preventDefault()
                   setSelectedId((prev) => (prev === e.id ? null : e.id))
                 }
