@@ -152,7 +152,7 @@ export async function sendConfirmationEmailWithCatalog({
           <td style="padding:16px 20px;">
             <p style="font-size:14px;font-weight:700;color:#92400e;margin:0 0 4px;">🎁 Utställarkatalog med erbjudanden</p>
             <p style="font-size:13px;color:#92400e;margin:0 0 12px;">Din personliga länk till mässans utställare och specialerbjudanden:</p>
-            <a href="${catalogUrl}" style="display:inline-block;background:#f59e0b;color:#ffffff;font-size:13px;font-weight:600;padding:10px 20px;border-radius:6px;text-decoration:none;">
+            <a href="${catalogUrl}" style="display:inline-block;background:#f59e0b;color:#ffffff;font-size:13px;font-weight:600;padding:14px 28px;border-radius:6px;text-decoration:none;">
               Öppna utställarkatalogen →
             </a>
           </td>
