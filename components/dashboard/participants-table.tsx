@@ -24,6 +24,7 @@ export default function ParticipantsTable({
   const [editing, setEditing] = useState(false)
   const [editValues, setEditValues] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [resending, setResending] = useState(false)
   const [resendStatus, setResendStatus] = useState<'success' | 'error' | null>(null)
 
@@ -34,6 +35,7 @@ export default function ParticipantsTable({
   useEffect(() => {
     setEditing(false)
     setResendStatus(null)
+    setSaveError(null)
   }, [selectedId])
 
   // Kolumner som visas i tabellen – de 3 första fälten
@@ -115,6 +117,7 @@ export default function ParticipantsTable({
   async function handleSave() {
     if (!selectedParticipant) return
     setSaving(true)
+    setSaveError(null)
     const res = await fetch(`/api/participants/${selectedParticipant.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -135,6 +138,9 @@ export default function ParticipantsTable({
         )
       )
       setEditing(false)
+    } else {
+      const body = await res.json().catch(() => ({}))
+      setSaveError(body.error ?? 'Något gick fel, försök igen.')
     }
     setSaving(false)
   }
@@ -486,10 +492,13 @@ export default function ParticipantsTable({
                       </div>
                     ))}
                   </div>
+                  {saveError && (
+                    <p className="mt-4 text-xs text-red-500 text-center">{saveError}</p>
+                  )}
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="mt-6 w-full py-2.5 text-sm font-semibold text-white bg-brand rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                    className="mt-3 w-full py-2.5 text-sm font-semibold text-white bg-brand rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
                   >
                     {saving ? 'Sparar...' : 'Spara ändringar'}
                   </button>

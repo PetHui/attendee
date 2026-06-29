@@ -20,7 +20,6 @@ export async function PUT(
 
   const service = createServiceClient()
 
-  // Verify participant belongs to user's org
   const { data: participant } = await service
     .from('participants')
     .select('id, event:events(organization_id)')
@@ -36,19 +35,31 @@ export async function PUT(
   const fieldIds = Object.keys(fieldValues)
 
   if (fieldIds.length > 0) {
-    await service
+    const { error: deleteError } = await service
       .from('participant_field_values')
       .delete()
       .eq('participant_id', id)
       .in('field_id', fieldIds)
 
-    await service.from('participant_field_values').insert(
-      fieldIds.map((fieldId) => ({
-        participant_id: id,
-        field_id: fieldId,
-        value: fieldValues[fieldId],
-      }))
-    )
+    if (deleteError) {
+      console.error('[participants PUT] delete error:', deleteError)
+      return NextResponse.json({ error: 'Kunde inte uppdatera deltagaren.' }, { status: 500 })
+    }
+
+    const { error: insertError } = await service
+      .from('participant_field_values')
+      .insert(
+        fieldIds.map((fieldId) => ({
+          participant_id: id,
+          field_id: fieldId,
+          value: fieldValues[fieldId],
+        }))
+      )
+
+    if (insertError) {
+      console.error('[participants PUT] insert error:', insertError)
+      return NextResponse.json({ error: 'Kunde inte uppdatera deltagaren.' }, { status: 500 })
+    }
   }
 
   return NextResponse.json({ success: true })
