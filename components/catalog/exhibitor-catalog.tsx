@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 interface Offer {
   id: string
@@ -86,9 +86,21 @@ function MapView({
 }) {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout>>()
   const placed = exhibitors.filter((e) => e.map_x != null)
   const activeId = hoveredId ?? selectedId
   const active = activeId ? placed.find((e) => e.id === activeId) : null
+
+  function scheduleHoverClear() {
+    hoverTimeout.current = setTimeout(() => setHoveredId(null), 150)
+  }
+  function cancelHoverClear() {
+    clearTimeout(hoverTimeout.current)
+  }
+  function closePopup() {
+    setSelectedId(null)
+    setHoveredId(null)
+  }
 
   return (
     <div className="space-y-3">
@@ -112,12 +124,11 @@ function MapView({
             <a
               key={e.id}
               href={detailUrl}
-              onMouseEnter={() => setHoveredId(e.id)}
-              onMouseLeave={() => setHoveredId(null)}
+              onMouseEnter={() => { cancelHoverClear(); setHoveredId(e.id) }}
+              onMouseLeave={scheduleHoverClear}
               onClick={(ev) => {
                 ev.stopPropagation()
                 if (!hoveredId) {
-                  // Touch device — no hover fired, show popup instead of navigating
                   ev.preventDefault()
                   setSelectedId((prev) => (prev === e.id ? null : e.id))
                 }
@@ -170,33 +181,52 @@ function MapView({
             </span>
           </div>
         ))}
-      </div>
 
-      {active && (
-        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-semibold text-gray-900">{active.company_name}</p>
-              {active.booth_number && (
-                <p className="text-xs text-gray-500 mt-0.5">Monter {active.booth_number}</p>
-              )}
-              {active.description && (
-                <p className="text-sm text-gray-600 mt-2 line-clamp-2">{active.description}</p>
-              )}
-              {active.exhibitor_offers.length > 0 && (
-                <p className="text-xs text-amber-600 font-medium mt-2">🎁 {active.exhibitor_offers.length} erbjudande{active.exhibitor_offers.length > 1 ? 'n' : ''}</p>
-              )}
+        {/* Popup-overlay inuti kartan */}
+        {active && (
+          <div
+            className="absolute bottom-0 left-0 right-0 z-20 p-2"
+            onMouseEnter={cancelHoverClear}
+            onMouseLeave={scheduleHoverClear}
+            onClick={(ev) => ev.stopPropagation()}
+          >
+            <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl border border-gray-100 p-3">
+              <div className="flex items-start gap-3">
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-900 text-sm">{active.company_name}</p>
+                  {active.booth_number && (
+                    <p className="text-xs text-gray-500 mt-0.5">Monter {active.booth_number}</p>
+                  )}
+                  {active.description && (
+                    <p className="text-xs text-gray-600 mt-1.5 line-clamp-2">{active.description}</p>
+                  )}
+                  {active.exhibitor_offers.length > 0 && (
+                    <p className="text-xs text-amber-600 font-medium mt-1.5">🎁 {active.exhibitor_offers.length} erbjudande{active.exhibitor_offers.length > 1 ? 'n' : ''}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <a
+                    href={`/${org.slug}/${eventId}/catalog/${active.id}${token ? `?token=${token}` : ''}`}
+                    style={{ backgroundColor: brand }}
+                    className="text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:opacity-90 whitespace-nowrap"
+                  >
+                    Mer info →
+                  </a>
+                  <button
+                    onClick={closePopup}
+                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                    aria-label="Stäng"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
-            <a
-              href={`/${org.slug}/${eventId}/catalog/${active.id}${token ? `?token=${token}` : ''}`}
-              style={{ backgroundColor: brand }}
-              className="shrink-0 text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:opacity-90"
-            >
-              Mer info →
-            </a>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {placed.length === 0 && (
         <div className="text-center py-8 text-gray-400 text-sm">
