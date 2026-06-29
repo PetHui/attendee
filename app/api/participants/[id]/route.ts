@@ -79,3 +79,56 @@ export async function PUT(
 
   return NextResponse.json({ success: true })
 }
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+
+  const authSupabase = await createClient()
+  const { data: { user } } = await authSupabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Ej autentiserad' }, { status: 401 })
+
+  const { data: userData } = await authSupabase
+    .from('users')
+    .select('organization_id, role')
+    .eq('id', user.id)
+    .single()
+  if (!userData) return NextResponse.json({ error: 'Användare hittades inte' }, { status: 403 })
+
+  const effectiveOrgId =
+    userData.role === 'superadmin'
+      ? await getImpersonatedOrgId()
+      : userData.organization_id
+
+  if (!effectiveOrgId) return NextResponse.json({ error: 'Ingen aktiv organisation.' }, { status: 403 })
+
+  const service = createServiceClient()
+
+  const { data: participant } = await service
+    .from('participants')
+    .select('id, event_id')
+    .eq('id', id)
+    .single()
+
+  if (!participant) return NextResponse.json({ error: 'Deltagare hittades inte.' }, { status: 404 })
+
+  const { data: event } = await service
+    .from('events')
+    .select('id')
+    .eq('id', participant.event_id)
+    .eq('organization_id', effectiveOrgId)
+    .single()
+
+  if (!event) return NextResponse.json({ error: 'Obehörig åtkomst.' }, { status: 403 })
+
+  const { error } = await service.from('participants').delete().eq('id', id)
+
+  if (error) {
+    console.error('[participants DELETE] error:', error)
+    return NextResponse.json({ error: 'Kunde inte ta bort deltagaren.' }, { status: 500 })
+  }
+
+  return NextResponse.json({ success: true })
+}

@@ -27,6 +27,8 @@ export default function ParticipantsTable({
   const [saveError, setSaveError] = useState<string | null>(null)
   const [resending, setResending] = useState(false)
   const [resendStatus, setResendStatus] = useState<'success' | 'error' | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const selectedParticipant = selectedId
     ? localParticipants.find((p) => p.id === selectedId) ?? null
@@ -36,6 +38,7 @@ export default function ParticipantsTable({
     setEditing(false)
     setResendStatus(null)
     setSaveError(null)
+    setConfirmDelete(false)
   }, [selectedId])
 
   // Kolumner som visas i tabellen – de 3 första fälten
@@ -143,6 +146,17 @@ export default function ParticipantsTable({
       setSaveError(body.error ?? 'Något gick fel, försök igen.')
     }
     setSaving(false)
+  }
+
+  async function handleDelete() {
+    if (!selectedParticipant) return
+    setDeleting(true)
+    const res = await fetch(`/api/participants/${selectedParticipant.id}`, { method: 'DELETE' })
+    if (res.ok) {
+      setLocalParticipants((prev) => prev.filter((p) => p.id !== selectedParticipant.id))
+      setSelectedId(null)
+    }
+    setDeleting(false)
   }
 
   async function handleResendEmail() {
@@ -538,6 +552,34 @@ export default function ParticipantsTable({
                     >
                       {resending ? 'Skickar...' : 'Skicka om bekräftelse'}
                     </button>
+
+                    {!confirmDelete ? (
+                      <button
+                        onClick={() => setConfirmDelete(true)}
+                        className="w-full py-2.5 text-sm font-medium text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors mt-2"
+                      >
+                        Ta bort deltagare
+                      </button>
+                    ) : (
+                      <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-700 mb-3">Är du säker? Detta går inte att ångra.</p>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleDelete}
+                            disabled={deleting}
+                            className="flex-1 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+                          >
+                            {deleting ? 'Tar bort...' : 'Ja, ta bort'}
+                          </button>
+                          <button
+                            onClick={() => setConfirmDelete(false)}
+                            className="flex-1 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                          >
+                            Avbryt
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </>
               )}
