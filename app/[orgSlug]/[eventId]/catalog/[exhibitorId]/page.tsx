@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation'
+import QRCode from 'qrcode'
 import { createServiceClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import QrReveal from '@/components/catalog/qr-reveal'
 
 export default async function ExhibitorDetailPage({
   params,
@@ -33,14 +35,33 @@ export default async function ExhibitorDetailPage({
 
   // Validate token
   let isUnlocked = false
+  let qrCodeBase64: string | undefined
+  let participantName: string | undefined
   if (token) {
     const { data: participant } = await serviceClient
       .from('participants')
-      .select('id')
+      .select('id, participant_field_values(value, registration_fields(label, sort_order))')
       .eq('qr_code', token)
       .eq('event_id', eventId)
       .maybeSingle()
     isUnlocked = !!participant
+    if (isUnlocked && participant) {
+      const buf = await QRCode.toBuffer(token, { width: 300, margin: 2 })
+      qrCodeBase64 = `data:image/png;base64,${buf.toString('base64')}`
+
+      const nameKeywords = ['förnamn', 'efternamn', 'namn', 'name']
+      type FieldValue = { value: string; registration_fields: { label: string; sort_order: number } | { label: string; sort_order: number }[] | null }
+      const nameValues = (participant.participant_field_values as unknown as FieldValue[])
+        .map((fv) => {
+          const rf = Array.isArray(fv.registration_fields) ? fv.registration_fields[0] : fv.registration_fields
+          return { value: fv.value, rf }
+        })
+        .filter(({ rf }) => rf && nameKeywords.some((kw) => rf.label.toLowerCase().includes(kw)))
+        .sort((a, b) => (a.rf!.sort_order ?? 0) - (b.rf!.sort_order ?? 0))
+        .map(({ value }) => value)
+        .filter(Boolean)
+      participantName = nameValues.length ? nameValues.join(' ') : undefined
+    }
   }
 
   if (!isUnlocked) notFound()
@@ -90,6 +111,9 @@ export default async function ExhibitorDetailPage({
               </div>
             )}
           </div>
+          {qrCodeBase64 && token && (
+            <QrReveal qrCodeBase64={qrCodeBase64} token={token} participantName={participantName} />
+          )}
         </div>
       </div>
 
