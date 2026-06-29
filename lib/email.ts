@@ -147,21 +147,17 @@ export async function sendConfirmationEmailWithCatalog({
   const footerNote = rest.emailFooterNote ?? DEFAULT_FOOTER_NOTE
 
   const catalogSection = catalogUrl
-    ? `<tr>
-        <td style="padding:0 32px 28px;">
-          <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;">
-            <tr>
-              <td style="padding:16px 20px;">
-                <p style="font-size:14px;font-weight:700;color:#92400e;margin:0 0 4px;">🎁 Utställarkatalog med erbjudanden</p>
-                <p style="font-size:13px;color:#92400e;margin:0 0 12px;">Din personliga länk till mässans utställare och specialerbjudanden:</p>
-                <a href="${catalogUrl}" style="display:inline-block;background:#f59e0b;color:#ffffff;font-size:13px;font-weight:600;padding:10px 20px;border-radius:6px;text-decoration:none;">
-                  Öppna utställarkatalogen →
-                </a>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>`
+    ? `<table width="100%" cellpadding="0" cellspacing="0" style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;margin:24px 0 0;">
+        <tr>
+          <td style="padding:16px 20px;">
+            <p style="font-size:14px;font-weight:700;color:#92400e;margin:0 0 4px;">🎁 Utställarkatalog med erbjudanden</p>
+            <p style="font-size:13px;color:#92400e;margin:0 0 12px;">Din personliga länk till mässans utställare och specialerbjudanden:</p>
+            <a href="${catalogUrl}" style="display:inline-block;background:#f59e0b;color:#ffffff;font-size:13px;font-weight:600;padding:10px 20px;border-radius:6px;text-decoration:none;">
+              Öppna utställarkatalogen →
+            </a>
+          </td>
+        </tr>
+      </table>`
     : ''
 
   const html = `<!DOCTYPE html>
@@ -213,12 +209,12 @@ export async function sendConfirmationEmailWithCatalog({
                 </tr>
               </table>
 
+              ${catalogSection}
               <p style="font-size:12px;color:#9ca3af;text-align:center;margin:24px 0 0;">
                 ${footerNote}
               </p>
             </td>
           </tr>
-          ${catalogSection}
           <tr>
             <td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;padding:14px;text-align:center;">
               <p style="font-size:12px;color:#9ca3af;margin:0;">Powered by <strong style="color:#4f46e5;">Attendee</strong></p>
