@@ -265,6 +265,12 @@ export default function ExhibitorCatalog({
                     <p className="text-gray-900 font-semibold text-lg mb-3">{participantName}</p>
                   )}
                   <img src={qrCodeBase64} alt="Din QR-kod" width={200} height={200} className="block" />
+                  {token && (
+                    <div className="mt-3">
+                      <p className="text-2xl font-bold tracking-widest text-gray-900">{token.slice(0, 6).toUpperCase()}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">Manuell kod</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
