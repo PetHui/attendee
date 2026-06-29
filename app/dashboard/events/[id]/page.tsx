@@ -78,6 +78,13 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
             >
               Öppna ↗
             </Link>
+            <Link
+              href={`/api/events/${event.id}/registration-qr`}
+              target="_blank"
+              className="text-xs text-brand hover:opacity-70 whitespace-nowrap transition-opacity"
+            >
+              QR-kod ↗
+            </Link>
           </div>
         </div>
       )}
