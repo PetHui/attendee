@@ -85,13 +85,19 @@ function MapView({
   highlightExhibitorId?: string
 }) {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const placed = exhibitors.filter((e) => e.map_x != null)
-  const hovered = hoveredId ? placed.find((e) => e.id === hoveredId) : null
+  const activeId = hoveredId ?? selectedId
+  const active = activeId ? placed.find((e) => e.id === activeId) : null
 
   return (
     <div className="space-y-3">
-      <p className="text-xs text-gray-500 text-center">Klicka på en monter för mer information</p>
-      <div className="relative bg-white rounded-xl shadow-sm border border-gray-200" style={{ aspectRatio: String(mapAspectRatio) }}>
+      <p className="text-xs text-gray-500 text-center">Tryck på en monter för mer information</p>
+      <div
+        className="relative bg-white rounded-xl shadow-sm border border-gray-200"
+        style={{ aspectRatio: String(mapAspectRatio) }}
+        onClick={() => setSelectedId(null)}
+      >
         <img
           src={mapImageUrl}
           alt="Hallkarta"
@@ -99,7 +105,7 @@ function MapView({
           draggable={false}
         />
         {placed.map((e) => {
-          const isHovered = hoveredId === e.id
+          const isActive = hoveredId === e.id || selectedId === e.id
           const isHighlighted = highlightExhibitorId === e.id
           const detailUrl = `/${org.slug}/${eventId}/catalog/${e.id}${token ? `?token=${token}` : ''}`
           return (
@@ -108,6 +114,14 @@ function MapView({
               href={detailUrl}
               onMouseEnter={() => setHoveredId(e.id)}
               onMouseLeave={() => setHoveredId(null)}
+              onClick={(ev) => {
+                ev.stopPropagation()
+                if (!hoveredId) {
+                  // Touch device — no hover fired, show popup instead of navigating
+                  ev.preventDefault()
+                  setSelectedId((prev) => (prev === e.id ? null : e.id))
+                }
+              }}
               className="absolute rounded border flex flex-col items-center justify-center overflow-hidden transition-all"
               style={{
                 left: `${e.map_x}%`,
@@ -115,17 +129,21 @@ function MapView({
                 width: `${e.map_w}%`,
                 height: `${e.map_h}%`,
                 backgroundColor: e.map_color ?? DEFAULT_BOOTH_COLOR,
-                borderColor: isHighlighted ? brand : isHovered ? brand : 'rgba(0,0,0,0.15)',
-                zIndex: isHighlighted ? 5 : isHovered ? 10 : 1,
-                boxShadow: undefined,
-                transform: isHovered ? 'scale(1.03)' : undefined,
+                borderColor: isHighlighted ? brand : isActive ? brand : 'rgba(0,0,0,0.15)',
+                zIndex: isHighlighted ? 5 : isActive ? 10 : 1,
+                transform: isActive ? 'scale(1.03)' : undefined,
               }}
             >
-              <span className="text-[10px] font-semibold text-gray-800 text-center px-1 leading-tight w-full text-center truncate">
+              {/* Mobil: endast monternummer */}
+              <span className="md:hidden text-[10px] font-bold text-gray-800 leading-none">
+                {e.booth_number ?? e.company_name.slice(0, 3).toUpperCase()}
+              </span>
+              {/* Desktop: företagsnamn + monternummer */}
+              <span className="hidden md:block text-[10px] font-semibold text-gray-800 text-center px-1 leading-tight w-full truncate">
                 {e.company_name}
               </span>
               {e.booth_number && (
-                <span className="text-[8px] text-gray-600">{e.booth_number}</span>
+                <span className="hidden md:block text-[8px] text-gray-600">{e.booth_number}</span>
               )}
             </a>
           )
@@ -154,23 +172,23 @@ function MapView({
         ))}
       </div>
 
-      {hovered && (
+      {active && (
         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="font-semibold text-gray-900">{hovered.company_name}</p>
-              {hovered.booth_number && (
-                <p className="text-xs text-gray-500 mt-0.5">Monter {hovered.booth_number}</p>
+              <p className="font-semibold text-gray-900">{active.company_name}</p>
+              {active.booth_number && (
+                <p className="text-xs text-gray-500 mt-0.5">Monter {active.booth_number}</p>
               )}
-              {hovered.description && (
-                <p className="text-sm text-gray-600 mt-2 line-clamp-2">{hovered.description}</p>
+              {active.description && (
+                <p className="text-sm text-gray-600 mt-2 line-clamp-2">{active.description}</p>
               )}
-              {hovered.exhibitor_offers.length > 0 && (
-                <p className="text-xs text-amber-600 font-medium mt-2">🎁 {hovered.exhibitor_offers.length} erbjudande{hovered.exhibitor_offers.length > 1 ? 'n' : ''}</p>
+              {active.exhibitor_offers.length > 0 && (
+                <p className="text-xs text-amber-600 font-medium mt-2">🎁 {active.exhibitor_offers.length} erbjudande{active.exhibitor_offers.length > 1 ? 'n' : ''}</p>
               )}
             </div>
             <a
-              href={`/${org.slug}/${eventId}/catalog/${hovered.id}${token ? `?token=${token}` : ''}`}
+              href={`/${org.slug}/${eventId}/catalog/${active.id}${token ? `?token=${token}` : ''}`}
               style={{ backgroundColor: brand }}
               className="shrink-0 text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:opacity-90"
             >
