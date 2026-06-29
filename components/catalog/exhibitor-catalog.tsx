@@ -92,7 +92,7 @@ function MapView({
   const active = activeId ? placed.find((e) => e.id === activeId) : null
 
   function scheduleHoverClear() {
-    hoverTimeout.current = setTimeout(() => setHoveredId(null), 400)
+    hoverTimeout.current = setTimeout(() => setHoveredId(null), 1000)
   }
   function cancelHoverClear() {
     clearTimeout(hoverTimeout.current)
@@ -185,7 +185,7 @@ function MapView({
         {/* Popup-overlay inuti kartan (mobil + desktop) */}
         {active && (
           <div
-            className="absolute top-0 left-0 right-0 z-20 p-2"
+            className="absolute top-1/2 -translate-y-1/2 left-0 right-0 z-20 p-2"
             onMouseEnter={cancelHoverClear}
             onMouseLeave={scheduleHoverClear}
             onClick={(ev) => ev.stopPropagation()}
