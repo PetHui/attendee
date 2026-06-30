@@ -81,7 +81,7 @@ export default function MapView({
   const active = activeId ? placed.find((e) => e.id === activeId) : null
 
   function scheduleHoverClear() {
-    hoverTimeout.current = setTimeout(() => setHoveredId(null), 1000)
+    hoverTimeout.current = setTimeout(() => setHoveredId(null), 1500)
   }
   function cancelHoverClear() {
     clearTimeout(hoverTimeout.current)
