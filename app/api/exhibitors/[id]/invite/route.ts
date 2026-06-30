@@ -14,20 +14,22 @@ export async function POST(
   const serviceClient = createServiceClient()
   const { data: exhibitor } = await serviceClient
     .from('exhibitors')
-    .select('*, event:events(title)')
+    .select('*, event:events(title, primary_color)')
     .eq('id', id)
     .single()
 
   if (!exhibitor) return NextResponse.json({ error: 'Utställaren hittades inte.' }, { status: 404 })
   if (!exhibitor.email) return NextResponse.json({ error: 'Ingen e-postadress angiven.' }, { status: 400 })
 
+  const event = exhibitor.event as any
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   await sendExhibitorInviteEmail({
     to: exhibitor.email,
     companyName: exhibitor.company_name,
-    eventTitle: (exhibitor.event as any)?.title ?? '',
+    eventTitle: event?.title ?? '',
     editToken: exhibitor.edit_token,
     appUrl,
+    brandColor: event?.primary_color ?? '#172554',
   })
 
   return NextResponse.json({ success: true })

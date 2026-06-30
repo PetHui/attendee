@@ -241,12 +241,14 @@ export async function sendExhibitorInviteEmail({
   eventTitle,
   editToken,
   appUrl,
+  brandColor = '#172554',
 }: {
   to: string
   companyName: string
   eventTitle: string
   editToken: string
   appUrl: string
+  brandColor?: string
 }) {
   const portalUrl = `${appUrl}/exhibitor/${editToken}`
 
@@ -263,9 +265,9 @@ export async function sendExhibitorInviteEmail({
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
           <tr>
-            <td style="background:#4f46e5;border-radius:12px 12px 0 0;padding:32px;text-align:center;">
+            <td style="background:${brandColor};border-radius:12px 12px 0 0;padding:32px;text-align:center;">
               <h1 style="color:#ffffff;margin:0;font-size:28px;font-weight:700;">Attendee</h1>
-              <p style="color:#c7d2fe;margin:8px 0 0;font-size:14px;">Utställarportal</p>
+              <p style="color:rgba(255,255,255,0.75);margin:8px 0 0;font-size:14px;">Utställarportal</p>
             </td>
           </tr>
           <tr>
@@ -278,9 +280,9 @@ export async function sendExhibitorInviteEmail({
 
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                 <tr>
-                  <td style="text-align:center;padding:24px;background:#f0f0ff;border-radius:8px;">
-                    <p style="font-size:14px;color:#4338ca;font-weight:600;margin:0 0 16px;">Er personliga redigeringslänk:</p>
-                    <a href="${portalUrl}" style="display:inline-block;background:#4f46e5;color:#ffffff;font-size:15px;font-weight:600;padding:14px 28px;border-radius:8px;text-decoration:none;">
+                  <td style="text-align:center;padding:24px;background:#f9fafb;border-radius:8px;">
+                    <p style="font-size:14px;color:#374151;font-weight:600;margin:0 0 16px;">Er personliga redigeringslänk:</p>
+                    <a href="${portalUrl}" style="display:inline-block;background:${brandColor};color:#ffffff;font-size:15px;font-weight:600;padding:14px 28px;border-radius:8px;text-decoration:none;">
                       Öppna utställarportalen →
                     </a>
                     <p style="font-size:12px;color:#9ca3af;margin:16px 0 0;">
