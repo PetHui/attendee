@@ -113,7 +113,7 @@ export async function sendConfirmationEmail({
           </tr>
           <tr>
             <td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;padding:14px;text-align:center;">
-              <p style="font-size:12px;color:#9ca3af;margin:0;">Powered by <strong style="color:#4f46e5;">Attendee</strong></p>
+              <p style="font-size:12px;color:#9ca3af;margin:0;">Powered by <strong style="color:#172554;">Attendee</strong></p>
             </td>
           </tr>
         </table>
@@ -217,7 +217,7 @@ export async function sendConfirmationEmailWithCatalog({
           </tr>
           <tr>
             <td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;padding:14px;text-align:center;">
-              <p style="font-size:12px;color:#9ca3af;margin:0;">Powered by <strong style="color:#4f46e5;">Attendee</strong></p>
+              <p style="font-size:12px;color:#9ca3af;margin:0;">Powered by <strong style="color:#172554;">Attendee</strong></p>
             </td>
           </tr>
         </table>
@@ -303,7 +303,7 @@ export async function sendExhibitorInviteEmail({
           </tr>
           <tr>
             <td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;padding:14px;text-align:center;">
-              <p style="font-size:12px;color:#9ca3af;margin:0;">Powered by <strong style="color:#4f46e5;">Attendee</strong></p>
+              <p style="font-size:12px;color:#9ca3af;margin:0;">Powered by <strong style="color:#172554;">Attendee</strong></p>
             </td>
           </tr>
         </table>
