@@ -307,12 +307,6 @@ export default function ExhibitorPortal({
       description: contacts.length > 0 ? `${contacts.length} kontaktperson${contacts.length > 1 ? 'er' : ''}` : 'Inga kontakter tillagda',
     },
     {
-      key: 'fakturering' as Tab,
-      icon: '🧾',
-      label: 'Fakturering',
-      description: 'Fakturaadress och referens',
-    },
-    {
       key: 'scanner' as Tab,
       icon: '📱',
       label: 'Skanna besökare',
