@@ -319,7 +319,7 @@ export default function ExhibitorPortal({
 
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-lg mx-auto px-4 h-14 flex items-center gap-3">
+        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
           {tab !== 'home' ? (
             <>
               <button
@@ -340,7 +340,7 @@ export default function ExhibitorPortal({
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-4 pb-10">
+      <div className="max-w-2xl mx-auto px-4 pb-10">
 
         {/* Hemskärm */}
         {tab === 'home' && (
