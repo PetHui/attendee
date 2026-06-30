@@ -171,7 +171,7 @@ export default function MapView({
 
         {active && (
           <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 p-2 w-11/12 md:w-[36rem]"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 p-2 w-11/12 md:w-[36rem]"
             onMouseEnter={cancelHoverClear}
             onMouseLeave={scheduleHoverClear}
             onClick={(ev) => ev.stopPropagation()}
