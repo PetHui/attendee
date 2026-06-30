@@ -68,6 +68,8 @@ export default async function HallkartaPage({
           org={org}
           eventId={event.id}
           brand={brand}
+          teaser
+          registrationUrl={`/${orgSlug}/${eventId}`}
         />
       </div>
     </div>

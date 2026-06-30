@@ -58,6 +58,8 @@ export default function MapView({
   token,
   brand,
   highlightExhibitorId,
+  teaser,
+  registrationUrl,
 }: {
   exhibitors: Exhibitor[]
   mapElements: MapElement[]
@@ -68,6 +70,8 @@ export default function MapView({
   token?: string
   brand: string
   highlightExhibitorId?: string
+  teaser?: boolean
+  registrationUrl?: string
 }) {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -179,21 +183,32 @@ export default function MapView({
                   {active.booth_number && (
                     <p className="text-xs text-gray-500 mt-0.5">Monter {active.booth_number}</p>
                   )}
-                  {active.description && (
+                  {!teaser && active.description && (
                     <p className="text-xs text-gray-600 mt-1.5 line-clamp-2">{active.description}</p>
                   )}
-                  {active.exhibitor_offers.length > 0 && (
+                  {!teaser && active.exhibitor_offers.length > 0 && (
                     <p className="text-xs text-amber-600 font-medium mt-1.5">🎁 {active.exhibitor_offers.length} erbjudande{active.exhibitor_offers.length > 1 ? 'n' : ''}</p>
+                  )}
+                  {teaser && registrationUrl && (
+                    <a
+                      href={registrationUrl}
+                      style={{ backgroundColor: brand }}
+                      className="inline-block mt-2.5 text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:opacity-90 whitespace-nowrap"
+                    >
+                      Registrera dig för att se mer →
+                    </a>
                   )}
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <a
-                    href={`/${org.slug}/${eventId}/catalog/${active.id}${token ? `?token=${token}` : ''}`}
-                    style={{ backgroundColor: brand }}
-                    className="text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:opacity-90 whitespace-nowrap"
-                  >
-                    Mer info →
-                  </a>
+                  {!teaser && (
+                    <a
+                      href={`/${org.slug}/${eventId}/catalog/${active.id}${token ? `?token=${token}` : ''}`}
+                      style={{ backgroundColor: brand }}
+                      className="text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:opacity-90 whitespace-nowrap"
+                    >
+                      Mer info →
+                    </a>
+                  )}
                   <button
                     onClick={closePopup}
                     className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
