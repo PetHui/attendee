@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { createServiceClient } from '@/lib/supabase/server'
 import MapView from '@/components/catalog/map-view'
+import ScrollHint from '@/components/catalog/scroll-hint'
 
 export default async function HallkartaPage({
   params,
@@ -72,6 +73,7 @@ export default async function HallkartaPage({
           registrationUrl={`/${orgSlug}/${eventId}/catalog`}
         />
       </div>
+      <ScrollHint />
     </div>
   )
 }
