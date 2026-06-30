@@ -69,7 +69,7 @@ export default async function HallkartaPage({
           eventId={event.id}
           brand={brand}
           teaser
-          registrationUrl={`/${orgSlug}/${eventId}`}
+          registrationUrl={`/${orgSlug}/${eventId}/catalog`}
         />
       </div>
     </div>
