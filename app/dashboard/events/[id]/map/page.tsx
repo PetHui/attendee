@@ -2,6 +2,7 @@ import { redirect, notFound } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { getImpersonatedOrgId } from '@/lib/impersonation'
 import MapEditor from '@/components/dashboard/map-editor'
+import HallkartaLinks from '@/components/dashboard/hallkarta-links'
 import Link from 'next/link'
 
 export default async function MapPage({ params }: { params: Promise<{ id: string }> }) {
@@ -31,6 +32,12 @@ export default async function MapPage({ params }: { params: Promise<{ id: string
 
   const serviceClient = createServiceClient()
 
+  const { data: org } = await serviceClient
+    .from('organizations')
+    .select('slug')
+    .eq('id', effectiveOrgId)
+    .single()
+
   const [{ data: exhibitors }, { data: presets }, { data: elements }] = await Promise.all([
     serviceClient
       .from('exhibitors')
@@ -50,6 +57,12 @@ export default async function MapPage({ params }: { params: Promise<{ id: string
       .order('created_at'),
   ])
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
+  const publicUrl = org ? `${appUrl}/${org.slug}/${id}/hallkarta` : null
+  const embedCode = publicUrl
+    ? `<iframe src="${publicUrl}?embed=true" width="100%" height="600" frameborder="0" style="border-radius:12px;"></iframe>`
+    : null
+
   return (
     <div className="h-screen flex flex-col">
       <div className="px-6 py-4 border-b border-gray-200 bg-white flex items-center gap-4">
@@ -61,6 +74,10 @@ export default async function MapPage({ params }: { params: Promise<{ id: string
         </Link>
         <h1 className="text-lg font-semibold text-gray-900">Hallkarta</h1>
       </div>
+
+      {publicUrl && embedCode && (
+        <HallkartaLinks publicUrl={publicUrl} embedCode={embedCode} />
+      )}
 
       <div className="flex-1 overflow-hidden">
         <MapEditor
