@@ -118,7 +118,7 @@ export default function MapView({
               onClick={(ev) => {
                 ev.stopPropagation()
                 const pointerType = (ev.nativeEvent as PointerEvent).pointerType
-                if (pointerType !== 'mouse') {
+                if (teaser || pointerType !== 'mouse') {
                   ev.preventDefault()
                   setSelectedId((prev) => (prev === e.id ? null : e.id))
                 }
