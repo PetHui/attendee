@@ -73,7 +73,7 @@ export default async function HallkartaPage({
           registrationUrl={`/${orgSlug}/${eventId}/catalog`}
         />
       </div>
-      <ScrollHint />
+      <ScrollHint brand={brand} />
     </div>
   )
 }

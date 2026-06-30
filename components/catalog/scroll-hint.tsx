@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-export default function ScrollHint() {
+export default function ScrollHint({ brand }: { brand?: string }) {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -26,7 +26,8 @@ export default function ScrollHint() {
   return (
     <button
       onClick={() => window.scrollBy({ top: window.innerHeight * 0.6, behavior: 'smooth' })}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-1 text-gray-400 hover:text-gray-600 transition-colors"
+      style={{ color: brand ?? undefined }}
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-1 text-gray-400 hover:opacity-80 transition-opacity"
       aria-label="Scrolla ner"
     >
       <span className="text-xs font-medium">Mer att se</span>
